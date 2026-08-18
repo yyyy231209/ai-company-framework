@@ -1,6 +1,6 @@
 # AI Company Framework · Spin Up an AI Company with One Sentence
 
-> ## 🪄 Say It. A Company Is Born.
+> ## 🪄 Company Is a Word
 >
 > 🚀 **Non-developers get their own AI company in 5 minutes**: open a new session, say
 > "I want to start an e-commerce company selling specialty coffee beans,"

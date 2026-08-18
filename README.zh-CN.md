@@ -1,6 +1,6 @@
 # AI Company Framework · 一句话开一家 AI 公司
 
-> ## 🪄 说出口，公司即诞生（Say It. A Company Is Born.）
+> ## 🪄 公司，一个词而已（Company Is a Word）
 >
 > 🚀 **小白 5 分钟拥有自己的 AI 公司**：新建一个会话，说一句
 > 「我要开一家卖精品咖啡豆的电商公司」，
