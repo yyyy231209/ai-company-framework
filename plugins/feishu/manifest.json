@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "plugin-manifest/v1",
+  "id": "feishu",
+  "name": "飞书桥（Feishu Bridge）",
+  "version": "0.4.0-staging",
+  "description": "手机遥控公司：老板/客服机器人 P2P 收发消息、员工虚拟路由、里程碑镜像群（可选）。",
+  "minFrameworkVersion": "2.0",
+  "author": "AI Company Framework contributors",
+  "license": "MIT",
+  "skills": [
+    { "file": "skills/role-customer-service.md", "roleName": "customer-service", "kind": "role" }
+  ],
+  "hooks": {
+    "afterCompanyCreate": [
+      { "type": "ps1", "path": "scripts/prepare-dirs.ps1" }
+    ],
+    "beforeFirstTask": [],
+    "afterTaskComplete": [],
+    "beforeDelivery": []
+  },
+  "requires": [],
+  "conflicts": []
+}

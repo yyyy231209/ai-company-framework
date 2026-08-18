@@ -1,0 +1,55 @@
+# ---- 安全：凭据与密钥（永不提交）----
+*.secret
+*.token
+*.key
+*.pem
+*.pfx
+*.p12
+.env
+.env.*
+credentials*.json
+feishu-credentials*.json
+feishu-registry*.json
+*credential*
+
+# ---- 业务与公司数据（永不提交）----
+companies/
+**/companies/*
+!companies/.gitkeep
+*客户*
+*.customer.*
+order*.csv
+customers*.csv
+
+# ---- 运行痕迹与日志 ----
+feishu-logs/
+*.network-response
+*.network-request
+*.log
+logs/
+
+# ---- 截图与验证证据（发布仓库不携带）----
+*.png
+*.jpg
+*.jpeg
+*.gif
+验证/
+**/验证/*
+
+# ---- 系统与编辑器 ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# ---- Node / 构建产物 ----
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# ---- 本仓库自生成文件 ----
+.git/
+*.tmp
+*~
