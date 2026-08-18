@@ -157,7 +157,7 @@ Write-Output '{"ok":true,"note":"voice dir ready"}'
 1. 把插件目录放进 `plugins/`（或你自己的仓库）；
 2. 写一个公司用一下：新建会话 → 说「我要开一家做有声书的公司」→ 建司时看老板是否列出「配音员」岗位；
 3. 检查 `afterCompanyCreate` 钩子是否创建了目录；
-4. 跑冒烟测试：`.\tests\smoke.ps1 -PluginId voice`（在途）。
+4. 跑冒烟测试：`.\tests\smoke.ps1`（插件级自动化测试在 v0.2 规划中）。
 
 ## 8. 提交插件
 
