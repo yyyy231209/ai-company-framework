@@ -14,6 +14,18 @@
 
 ---
 
+![架构图](assets/architecture.svg)
+
+## 真实截图
+
+> 📸 真实运行截图放这里（把截图放进 `assets/screenshots/`）：
+>
+> - `assets/screenshots/company-created.png` — 一句话后诞生的新公司
+> - `assets/screenshots/employee-panel.png` — 员工侧边栏（查看/改配/指挥）
+> - `assets/screenshots/delivery.png` — 首单交付物 + 质检报告
+
+---
+
 ## ✨ 五大卖点
 
 ### 1️⃣ 部署超轻松——它是 DeepSeek Harness 的框架

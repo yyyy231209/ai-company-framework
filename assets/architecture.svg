@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="520" viewBox="0 0 960 520">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#16213e"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0f3460"/>
+      <stop offset="100%" stop-color="#e94560"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="520" rx="20" fill="url(#bg)"/>
+
+  <!-- title -->
+  <text x="480" y="52" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" fill="#ffffff">AI Company Framework · Architecture</text>
+
+  <!-- USER -->
+  <g transform="translate(370, 80)">
+    <rect x="0" y="0" width="220" height="52" rx="12" fill="#e94560"/>
+    <text x="110" y="32" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff">😊 You (the Boss)</text>
+  </g>
+  <line x1="480" y1="132" x2="480" y2="170" stroke="#e94560" stroke-width="3"/>
+
+  <!-- BOSS AGENT -->
+  <g transform="translate(310, 172)">
+    <rect x="0" y="0" width="340" height="64" rx="14" fill="#0f3460" stroke="#e94560" stroke-width="2"/>
+    <text x="170" y="27" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="17" font-weight="700" fill="#ffffff">🤖 Boss Agent</text>
+    <text x="170" y="50" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="12" fill="#9aa7c0">design · route models · schedule · QA gate · deliver</text>
+  </g>
+  <line x1="480" y1="236" x2="480" y2="272" stroke="#e94560" stroke-width="3"/>
+
+  <!-- AGENTTEAMS -->
+  <g transform="translate(180, 274)">
+    <rect x="0" y="0" width="600" height="150" rx="16" fill="#131d33" stroke="#0f3460" stroke-width="2"/>
+    <text x="300" y="30" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="15" font-weight="700" fill="#e94560">AgentTeams (one team per company)</text>
+    <!-- role tiles -->
+    <g transform="translate(24, 52)"><rect width="120" height="66" rx="10" fill="#1b2a4a"/><text x="60" y="27" text-anchor="middle" font-size="13" fill="#fff" font-family="Segoe UI">Copywriter</text><text x="60" y="50" text-anchor="middle" font-size="10" fill="#9aa7c0" font-family="Segoe UI">writes posts</text></g>
+    <g transform="translate(160, 52)"><rect width="120" height="66" rx="10" fill="#1b2a4a"/><text x="60" y="27" text-anchor="middle" font-size="13" fill="#fff" font-family="Segoe UI">Customer Sv</text><text x="60" y="50" text-anchor="middle" font-size="10" fill="#9aa7c0" font-family="Segoe UI">replies to clients</text></g>
+    <g transform="translate(296, 52)"><rect width="120" height="66" rx="10" fill="#1b2a4a"/><text x="60" y="27" text-anchor="middle" font-size="13" fill="#fff" font-family="Segoe UI">QA</text><text x="60" y="50" text-anchor="middle" font-size="10" fill="#9aa7c0" font-family="Segoe UI">accepts / rejects</text></g>
+    <g transform="translate(432, 52)"><rect width="120" height="66" rx="10" fill="#1b2a4a"/><text x="60" y="27" text-anchor="middle" font-size="13" fill="#fff" font-family="Segoe UI">+ 8 more roles</text><text x="60" y="50" text-anchor="middle" font-size="10" fill="#9aa7c0" font-family="Segoe UI">or DIY your own</text></g>
+  </g>
+
+  <!-- bottom row: company dir + wisdom + feishu -->
+  <g transform="translate(70, 456)">
+    <rect width="380" height="44" rx="10" fill="#1b2a4a" stroke="#0f3460"/>
+    <text x="190" y="27" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#d5ddee">📁 One isolated company directory per session</text>
+  </g>
+  <g transform="translate(470, 456)">
+    <rect width="220" height="44" rx="10" fill="#1b2a4a" stroke="#0f3460"/>
+    <text x="110" y="27" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#d5ddee">🧠 De-identified wisdom</text>
+  </g>
+  <g transform="translate(710, 456)">
+    <rect width="180" height="44" rx="10" fill="#1b2a4a" stroke="#e94560" stroke-width="1.5"/>
+    <text x="90" y="27" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="13" fill="#e94560">📱 Feishu plugin (opt)</text>
+  </g>
+  <!-- connectors -->
+  <line x1="480" y1="424" x2="260" y2="456" stroke="#0f3460" stroke-width="2"/>
+  <line x1="480" y1="424" x2="580" y2="456" stroke="#0f3460" stroke-width="2"/>
+  <line x1="480" y1="424" x2="800" y2="456" stroke="#e94560" stroke-width="2"/>
+</svg>

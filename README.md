@@ -15,6 +15,18 @@
 
 ---
 
+![Architecture](assets/architecture.svg)
+
+## Screenshots
+
+> 📸 Real run captures go here (drop your screenshots into `assets/screenshots/`):
+>
+> - `assets/screenshots/company-created.png` — a fresh company after one sentence
+> - `assets/screenshots/employee-panel.png` — employee sidebar (watch / re-route / command)
+> - `assets/screenshots/delivery.png` — first deliverables + QA report
+
+---
+
 ## ✨ Why You'll Love It
 
 ### 1️⃣ Effortless Setup — It Lives Inside DeepSeek Harness
