@@ -41,8 +41,9 @@
 
 ## [Unreleased]
 
-### 计划
+### 文档与定位
 
-- 插件市场雏形（manifest 注册表 + 一键安装）。
-- 更多行业示例公司（餐饮 / 教育 / 游戏 / 咨询）。
-- 小白向导 UI（新建会话后引导式提问）。
+- 明确 `v0.1.1` 定位为 DeepSeek Harness 多 Agent Skills Starter Kit，而非独立运行时。
+- 补充 DeepSeek Harness / DSH Desktop 的底座分工与官方链接。
+- 增加真实脱敏截图，展示 AgentTeams 活动、任务依赖和员工侧边栏。
+- 补充按岗位分配模型、子 Agent 独立调教、飞书员工直连和通用工作流说明。

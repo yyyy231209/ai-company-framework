@@ -1,17 +1,28 @@
-# AI Company Framework · Spin Up an AI Company with One Sentence
+# AI Company Framework
 
-> ## 🪄 Company Is a Word
+> **Company Is a Word.**
 >
-> 🚀 **Non-developers get their own AI company in 5 minutes**: open a new session, say
-> "I want to start an e-commerce company selling specialty coffee beans,"
-> and the framework builds your team, assigns roles, dispatches tasks, runs QA,
-> and delivers results — you just make the calls.
+> A multi-agent company and workflow starter kit for DeepSeek Harness. Describe an outcome and it creates a team, routes models by role, builds a task graph, runs QA, and delivers the results. Teams remain visible in the AgentTeams panel and can be managed through the employee sidebar or Feishu.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![Release](https://img.shields.io/badge/Release-v0.1.1-blue)](RELEASE_NOTES.md)
 
 [English](README.md) | [简体中文](README.zh-CN.md)
+
+## Built on DeepSeek Harness and DSH Desktop
+
+This project does not replace the underlying runtime. It adds a company and workflow orchestration layer on top:
+
+- [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) provides model access, tool execution, persistent sessions, Skills, and the plugin runtime;
+- [DSH Desktop](https://github.com/dataelement/dsh-desktop) packages Harness as a practical desktop application and provides visual interfaces such as the AgentTeams activity panel and employee sidebar;
+- AI Company Framework adds role templates, model-routing policy, task dependencies, QA/rework, delivery contracts, Feishu integration, and isolated instances.
+
+If you are new to the stack, install DSH Desktop first, then run this repository's install script.
+
+## Project status
+
+`v0.1.1` is a reusable set of Harness Skills, templates, operating procedures, and install scripts: a **multi-agent starter kit**. It is not a standalone agent runtime and does not replace Harness execution. Orchestration rules are currently Skill-driven; a declarative company spec, code-level model router, automatic plugin loader, and standalone end-to-end executor are not included in this release.
 
 ---
 
@@ -33,43 +44,47 @@
 
 ---
 
-## ✨ Why You'll Love It
+## Core capabilities
 
-### 1️⃣ Effortless Setup — It Lives Inside DeepSeek Harness
+### Runs inside Harness
 
-- **No server, no database, no API-key configuration**
-- Just install [DeepSeek Harness](https://github.com/deepseek-ai) (Windows desktop app — logged in means models are ready)
-- Run one install script, then 3 steps to a company
-- No technical background needed — `install.ps1` does it all
+The project does not require a separate server or database. Install [DSH Desktop](https://github.com/dataelement/dsh-desktop), sign in, and run `install.ps1` to copy the skills into Harness. Harness provides models, tools, sessions, and AgentTeams; this project organizes them into teams and workflows.
 
-### 2️⃣ Your Own AI Company in Minutes
+### Creates a team from one sentence
 
-- One sentence (e.g. "I want an e-commerce company selling specialty coffee") → company created automatically
-- The boss asks at most **1–2 key questions** (price range, channel); everything else uses sensible defaults
-- Roles auto-assigned, models auto-picked, team auto-created, first task auto-dispatched
-- You watch results — no Agent concepts to learn
+Describe the business and the intended result. The boss chooses the roles, model routes, working directory, and initial task graph. Tasks can run in parallel and pass through QA, targeted rework, and delivery. Missing business facts are listed as assumptions instead of being invented.
 
-### 3️⃣ Your Employees, Your Rules — Fine-Tune Every Sub-Agent
+### Routes models by role
 
-- 👥 **Watch them work**: the 👥 button opens the employee sidebar — see what every sub-agent is doing
-- 🎛️ **Swap models losslessly**: an employee underperforming? Change its model routing in the sidebar — no session reset, no lost context
-- 📨 **Direct commands**: message any employee directly, like pinging a coworker
-- 🧠 **They evolve**: every employee writes and maintains its own skill file — your coaching sticks, and they get better over time
+Before creating a team, the boss reads the models currently available to the user instead of hard-coding one provider. Vision roles prefer image-capable models; planning, engineering, and review roles use stronger reasoning models; writing, support, and batch work use faster and lower-cost routes; long-running jobs also account for quota and runtime cost. This reserves expensive models for the work that benefits from them and reduces token and account-quota waste. Any member's route can still be changed later from the employee sidebar.
 
-### 4️⃣ Fully Extensible — DIY Any Kind of Company
+### Shows AgentTeams activity in real time
 
-- **11 prebuilt roles**: copywriter, customer service, QA, researcher, video editor, finance, HR, ops, developer, data analyst, translator
-- **Industry template library**: e-commerce / short-video / games / consulting / support outsourcing — one sentence maps to the right roles
-- **Build your own roles**: follow `company-role-template` to add a role skeleton; the employee fills in the full skill on onboarding
-- **Plugin system**: contribute a capability with one `manifest.json` + one skill file (see `docs/PLUGINS.md`)
-- Coffee shop, furniture store, game studio, consulting firm — change one sentence, get a different company
+The AgentTeams panel shows member status, task ownership, and overall progress. Its dependency graph makes parallel branches and blocked tasks visible. The employee sidebar opens any member's own conversation and tool activity.
 
-### 5️⃣ Unlimited Companies — as Many as You Want
+### Lets you coach each sub-agent separately
 
-- **One session = one company**, data fully isolated, zero cross-contamination
-- Want a second one? **New session, one sentence, done** — a brand-new company
-- Each company has its own team, employees, file directory, and Feishu bot
-- Run a coffee e-commerce + a furniture store + a short-video studio simultaneously — no interference
+Every member has a persistent conversation, mailbox, and Skill file. You can message one member directly or change only that member's model route without recreating the team or discarding its conversation. Members complete their own Skills during onboarding and maintain them as they learn better ways to work; the boss still controls interface contracts.
+
+### Supports remote control through Feishu
+
+The optional Feishu plugin uses the official `registerApp()` flow. After one confirmation link, it creates the app and bot, configures permissions, events, WebSocket transport, and encrypted credentials.
+
+The boss bot accepts remote instructions and returns progress or final results. Staff bots bind to a specific member through `staffMemberId`, allowing direct conversations with customer service or another sub-agent. Milestones can also be mirrored to a Feishu group. Boss/staff P2P is verified; multi-role virtual routing remains staging in `dsh-feishu-bridge 0.4.0` (the bridge is versioned separately from this starter kit).
+
+See [`plugins/feishu/README.md`](plugins/feishu/README.md).
+
+### Companies are a preset; complete workflows are also supported
+
+A role can be treated as a workflow node with defined inputs, outputs, and acceptance criteria. The task graph supports serial work, parallel branches, batch acceptance, and rework loops. The same framework can run content production, research reports, software development, support operations, video production, or data-analysis workflows.
+
+### Extends through Harness and framework plugins
+
+Teams can use models, tools, Skills, and client plugins available in Harness. The framework also defines `plugin-manifest/v1` for contributing roles, skills, scripts, and lifecycle hooks. Eleven common roles are included, and missing roles can be created from `company-role-template`.
+
+### Runs multiple isolated companies or workflows
+
+One top-level session maps to one isolated instance. Start another session to create another company or workflow. Each instance keeps its own team, tasks, skills, files, and optional Feishu bots; business data is not shared between them.
 
 ---
 
@@ -78,7 +93,7 @@
 ### Prerequisites
 
 - Windows 10/11
-- [DeepSeek Harness](https://github.com/deepseek-ai) (desktop) installed and signed in
+- [DSH Desktop](https://github.com/dataelement/dsh-desktop) installed and signed in (it packages DeepSeek Harness as a desktop app)
 
 ### Step 1: Install the framework into Harness
 
@@ -94,22 +109,28 @@ Open a **new session** in Harness (never reuse an old one — one session = one 
 
 ### Step 3: Say one sentence
 
-> "I want to start an e-commerce company selling specialty coffee beans, with the first deliverables being a Xiaohongshu (Little Red Book) post and a customer-service playbook."
+> "I want to start an e-commerce company selling specialty coffee beans, with the first deliverables being a Xiaohongshu post and a customer-service playbook."
 
-The boss asks at most 1–2 key questions (price range, channel), then handles everything else automatically.
+Or describe a workflow directly:
+
+> "Build a research-report pipeline: one agent finds sources, one analyzes data, one writes the report, and QA verifies citations before delivery."
+
+The boss fills in the information needed for the architecture, then creates the team and task graph.
 
 ## Capabilities
 
 | Capability | Description |
 |------|------|
-| 🏢 One-click company | One sentence → industry → roles/routing/team/directories |
-| 👥 Multi-agent staff | 11 prebuilt roles, DIY roles, fully steerable |
-| 🚦 Auto scheduling | Dependency-graph tasks, parallel execution, event-driven |
-| ✅ QA loop | Deliverable → QA gate → targeted rework → recheck → release |
-| 📦 Delivery packaging | Deliverables + assumptions list + acceptance points |
-| 🧠 Wisdom accumulation | De-identified workflow lessons shared across companies, zero business leakage |
-| 🔒 Session isolation | One session = one company; open as many as you like |
-| 📱 Feishu plugin | Optional: control your company from your phone / customer service bot |
+| Native Harness runtime | Reuses Harness models, tools, sessions, Skills, and plugins |
+| Team from one sentence | Creates roles, team, directories, and initial tasks from an outcome |
+| Automatic model routing | Reads available models and routes by capability, speed, cost, and quota |
+| AgentTeams monitoring | Shows member state, task ownership, dependencies, and progress in real time |
+| Per-agent coaching | Independent conversation, model route, Skill file, and persistent context |
+| Workflow orchestration | Serial/parallel tasks, file contracts, QA, rework, and delivery |
+| Feishu remote control | Creates boss/staff bots and routes messages to a specific agent |
+| Plugin extension | Adds capabilities through Harness plugins and `plugin-manifest/v1` |
+| Isolated instances | One session per instance; run multiple companies or workflows |
+| Shared workflow wisdom | Shares de-identified process lessons, not business data |
 
 ## Repo Layout
 
@@ -128,16 +149,16 @@ ai-company-framework/
 └─ LICENSE (MIT)
 ```
 
-## Plugin System (for Developers)
+## Plugin interface
 
-The framework is pluggable by design. A plugin = a directory + a `manifest.json`:
+`v0.1.1` defines `plugin-manifest/v1` and includes a Feishu example for declaring contributed Skills, scripts, and lifecycle hooks. An automatic plugin loader is not part of this release; today this project's `install.ps1` installs Skills into Harness, which loads and runs them.
 
-- **Hooks**: after company create, before onboarding, before task, after QA, before delivery…
-- **Skill injection**: plugins can contribute role skills (e.g. Feishu customer service)
-- **Script hooks**: custom PowerShell / Node scripts
-- **Isolation**: plugins may not read other companies' data; credentials must stay encrypted
+- **Hooks**: after company creation, before the first task, after task completion, and before delivery;
+- **Skill injection**: plugins can add roles and domain capabilities;
+- **Script hooks**: PowerShell or Node scripts;
+- **Isolation**: plugins may not read another instance's data, and credentials must not enter the repository.
 
-See [`docs/PLUGINS.md`](docs/PLUGINS.md). Feishu plugin example: [`plugins/feishu/`](plugins/feishu/README.md).
+See [`docs/PLUGINS.md`](docs/PLUGINS.md) and the [`plugins/feishu/`](plugins/feishu/README.md) example.
 
 ## Docs
 
@@ -154,11 +175,7 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_
 
 ## Roadmap
 
-- [x] v0.1 core: create company + scheduling + QA + delivery
-- [x] 11 prebuilt role skills
-- [x] Feishu bridge (P2P verified; 0.4.0 multi-role routing staging)
-- [ ] v0.2 plugin marketplace + more sample companies
-- [ ] v0.3 guided wizard UI + one-click demo
+- [x] v0.1.1: Skills starter kit, 11 roles, task/QA/delivery templates, model-routing rules, AgentTeams monitoring, and Feishu P2P integration
 
 ## License
 
@@ -167,5 +184,5 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [CODE_OF_CONDUCT.md](CODE_OF_
 ## Disclaimer
 
 - Content generated by this framework (copy/plans/code) requires human review before use; it is not professional advice.
-- Feishu 0.4.0 multi-role virtual routing is staging; evaluate before production deployment.
+- Multi-role virtual routing in `dsh-feishu-bridge 0.4.0` is staging; evaluate it before production deployment.
 - Adding bots to groups and mirror webhooks require manual action in the Feishu client.
