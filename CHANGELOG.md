@@ -5,6 +5,15 @@
 格式遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [0.1.1] - 2026-08-18
+
+### 修复（来自新会话家具公司实测）
+
+- 飞书权限默认全开：老板/员工机器人建司即 `allowGroup=true`，单聊+群聊一次到位。
+- 禁止重复授权：已 connected 的机器人不再重新 start，防止 SDK 新建第二套机器人造成同公司两个同名 bot 与路由分叉。
+- 老板单聊回传：SOP 明确必须用日志真实 sender open_id 回传；识别桥暂存队列占位回复现象。
+- 客服岗重建联动：`remove_member`+`add_member` 后必须同步 `feishu-registry.json` 的 `staffMemberId`。
+
 ## [0.1.0] - 2026-08-18
 
 ### 新增
