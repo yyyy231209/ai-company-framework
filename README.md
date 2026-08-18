@@ -17,13 +17,19 @@
 
 ![Architecture](assets/architecture.svg)
 
-## Screenshots
+## Real Screenshots
 
-> 📸 Real run captures go here (drop your screenshots into `assets/screenshots/`):
->
-> - `assets/screenshots/company-created.png` — a fresh company after one sentence
-> - `assets/screenshots/employee-panel.png` — employee sidebar (watch / re-route / command)
-> - `assets/screenshots/delivery.png` — first deliverables + QA report
+### One sentence → a working AI company
+
+![A furniture AI company created in DeepSeek Harness](assets/screenshots/company-created.png)
+
+### Live AgentTeams activity and task dependencies
+
+![AgentTeams members and dependency graph](assets/screenshots/agentteams-activity.png)
+
+### Open any employee, inspect its work, message it, or switch its model
+
+![Employee sidebar with model routing and direct messaging](assets/screenshots/employee-sidebar.png)
 
 ---
 

@@ -16,13 +16,19 @@
 
 ![架构图](assets/architecture.svg)
 
-## 真实截图
+## 真实运行截图
 
-> 📸 真实运行截图放这里（把截图放进 `assets/screenshots/`）：
->
-> - `assets/screenshots/company-created.png` — 一句话后诞生的新公司
-> - `assets/screenshots/employee-panel.png` — 员工侧边栏（查看/改配/指挥）
-> - `assets/screenshots/delivery.png` — 首单交付物 + 质检报告
+### 一句话 → 一家开始运转的 AI 公司
+
+![在 DeepSeek Harness 中创建家具 AI 公司](assets/screenshots/company-created.png)
+
+### AgentTeams 员工活动与任务依赖图
+
+![AgentTeams 员工和任务依赖图](assets/screenshots/agentteams-activity.png)
+
+### 打开任意员工：查看工作、直接发消息或更换模型
+
+![员工侧边栏、模型路由与直接消息](assets/screenshots/employee-sidebar.png)
 
 ---
 
