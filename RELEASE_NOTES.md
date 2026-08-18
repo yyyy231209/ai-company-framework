@@ -1,13 +1,15 @@
 # AI Company Framework · v0.1.1 发布说明
 
+> 🪄 **Say It. A Company Is Born.**
 > 一句话开一家 AI 公司：新建会话 → 说一句需求 → 自动建团队、配岗位、派活、质检、交付。
 
 ## 版本信息
 
 - **版本**：v0.1.1（tag: `v0.1.1`）
+- **口号**：Say It. A Company Is Born.
 - **许可证**：MIT
 - **状态**：稳定核心（Alpha→Beta 过渡）
-- **提交**：4 个 commit，41 个文件
+- **提交**：7 个 commit，46 个文件
 
 ## 本版本包含
 
