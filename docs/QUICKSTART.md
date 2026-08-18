@@ -17,7 +17,7 @@
 打开 PowerShell，进入仓库目录：
 
 ```powershell
-cd E:\comPIP\ai-company-framework
+cd <你的仓库目录>   # 例如：cd D:\projects\ai-company-framework
 .\scripts\install.ps1
 ```
 
@@ -47,7 +47,7 @@ cd E:\comPIP\ai-company-framework
 
 在新会话里输入（可以换成你自己的业务）：
 
-> 「我要开一家卖手工香薰蜡烛的电商公司，首单产出一篇小红书种草笔记和客服话术包，价格带 50–150 元，主要在小红书卖。」
+> 「我要开一家卖精品咖啡豆的电商公司，首单产出一篇小红书种草笔记和客服话术包，价格带 60–200 元，主要在小红书卖。」
 
 老板 Agent 会：
 

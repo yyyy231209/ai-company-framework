@@ -37,7 +37,7 @@ $requiredFiles = @(
   'docs/TROUBLESHOOTING.md',
   'plugins/feishu/manifest.json',
   'plugins/feishu/README.md',
-  'examples/ecommerce-candle/README.md',
+  'examples/ecommerce-coffee/README.md',
   'scripts/install.ps1',
   'scripts/verify.ps1',
   'scripts/security-scan.ps1'

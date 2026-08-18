@@ -12,7 +12,7 @@ powershell -ExecutionPolicy Bypass -File scripts\install.ps1
 
 ### Q2：必须装在哪？能放别的盘吗？
 
-可以。仓库可以放在任何位置（本仓库就在 `E:\comPIP\ai-company-framework`）。安装脚本会把技能复制到 Harness 的技能目录，仓库本身可以移动。
+可以。仓库可以放在任何位置。安装脚本会把技能复制到 Harness 的技能目录，仓库本身可以移动。
 
 ### Q3：需要买 API Key 吗？
 
