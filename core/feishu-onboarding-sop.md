@@ -27,7 +27,7 @@ feishu_onboard(
   action="start",
   kind="boss",
   displayName="<公司名> · 老板助手",
-  allowGroup=false
+  allowGroup=true
 )
 ```
 
@@ -41,7 +41,7 @@ feishu_onboard(
   kind="staff",
   staffMemberId="<AgentTeams member.id>",
   displayName="<公司名> · <岗位>助手",
-  allowGroup=false
+  allowGroup=true
 )
 ```
 
@@ -68,7 +68,14 @@ feishu_status()
 - 非敏感路由写入 UTF-8 `<dshHome>/feishu-registry.json`；
 - 创建 transport 并绑定 AgentTeams 公司/员工。
 
-`allowGroup=true` 时才增量申请 `im:message.group_at_msg:readonly`。默认 P2P，避免过度授权。**它只申请权限，不会自动把 App 加入任何群。** 群 @ 验收前，群主须在飞书桌面端或移动端进入「群设置 → 群机器人 → 添加」，把应用机器人加入目标群；自定义 webhook 机器人按飞书规则只能在桌面端添加。官方说明：https://www.feishu.cn/hc/zh-CN/articles/360024984973
+`allowGroup=true` 时申请 `im:message.group_at_msg:readonly`（**默认开启**，避免二次授权新建机器人造成同公司多套机器人）。**它只申请权限，不会自动把 App 加入任何群。** 群 @ 验收前，群主须在飞书桌面端或移动端进入「群设置 → 群机器人 → 添加」，把应用机器人加入目标群；自定义 webhook 机器人按飞书规则只能在桌面端添加。官方说明：https://www.feishu.cn/hc/zh-CN/articles/360024984973
+
+### 禁止重复授权（防止多套机器人）
+
+- 同公司同一岗位机器人**只授权一次**；已 connected 的机器人绝不重复 `feishu_onboard(action=start)`。
+- 若用户已确认但需要改权限，**不要重新 start**（会新建机器人）；先评估是否必须，必要时删干净旧的（注册表 + 凭据 + 用户飞书端旧会话）再重建。
+- 重建后必须核对：注册表只有一套老板 + 一套每岗位员工机器人；`bossBotId` 与 `staffMemberId` 指向**当前**机器人；旧 botId 的凭据已删除。
+- 用户侧旧会话残留：机器人改名/重建后，用户飞书里会同时存在新旧会话，需引导用户删除旧会话，只对新机器人发消息。
 
 ## 安全铁律
 
@@ -77,6 +84,19 @@ feishu_status()
 - registry 只存非敏感路由；Secret 只存 DPAPI blob；
 - 用户确认链接过期后重新 start，不复用旧链接；
 - 不抓取或长期保存飞书浏览器 Cookie，不依赖私有开发者后台接口。
+
+## 老板回传通道（单聊诊断要点）
+
+- 老板（主会话）单聊收到的客户/用户消息以「📱 飞书消息」文本进入；**回传必须用日志中的真实 sender open_id**（`feishu-logs/<company>/<chat>.jsonl` 中 `rx` 事件的 `senderOpenId`），禁止用客服会话里其他客户 open_id 尝试回传（会 400）。
+- 若 `feishu_status` 显示「收到 N / 发出 M / 暂存 K」，K>0 说明消息在桥暂存队列（老板离线/不可唤醒），此时用户侧只看到自动占位回复「✅ 已收到，老板开工中…」；桥重启后暂存会补投，老板收到后须用真实 sender id 回传完整回复。
+- 老板回复优先走 `feishu_notify`（平台镜像通道）；需要指定机器人时用 `feishu_send(botId=入站bot, receiveId=真实sender, receiveIdType=open_id)`。
+- 机器人重建/改名后，用户飞书端旧会话可能仍指向旧机器人：引导用户在飞书删除旧会话，只对新机器人发消息。
+
+## 客服岗重建联动（staffMemberId 同步）
+
+- 客服成员会话连败被移除重建后，**必须同步更新 `feishu-registry.json` 中该客服机器人的 `staffMemberId`** 为新的 member.id，否则客户消息仍路由到已移除成员。
+- 流程：`agent_teams_remove_member` → `agent_teams_add_member` → 读 registry → `edit` 更新 `staffMemberId` → `feishu_status` 验证 connected → 客户发探针验证 `wake result=ok` 且 sessionId 等于新成员 id。
+- 重建后旧成员的 `feishu-registry` 条目与旧凭据（如有独立 App）一并清理，防止路由分叉。
 
 ## PTC / Code Presentation 用法
 

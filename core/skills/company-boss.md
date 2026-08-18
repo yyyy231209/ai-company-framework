@@ -172,7 +172,7 @@ whenToUse: 用户提出业务需求、要求组建多Agent公司或让老板派�
 1. 老板机器人：调用 `feishu_onboard(action=start, kind=boss, displayName=<公司名·老板助手>)`。
 2. 员工机器人：调用 `feishu_onboard(action=start, kind=staff, staffMemberId=<AgentTeams member.id>, displayName=<公司名·岗位助手>)`。员工 `kind` 永远是 `staff`，岗位名不能当 kind。
 3. 把工具返回的一次性飞书官方确认链接交给用户打开；用户只确认一次。SDK 自动创建机器人、最小权限、`im.message.receive_v1`、WebSocket，返回的 App Secret 直接经 Windows DPAPI 加密，禁止进入模型回复或日志。
-4. 默认只申请 P2P 权限；用户明确需要群聊时才传 `allowGroup=true`。该参数只增量授权，不会自动入群；群主还须在飞书桌面端或移动端把应用机器人加入目标群。
+4. **默认全开权限**：老板与员工机器人一律传 `allowGroup=true`（单聊+群聊一次到位，避免二次授权新建第二套机器人）。**禁止重复授权**——已 connected 的机器人绝不再次 `feishu_onboard(action=start)`；确实要改权限时，先删干净旧机器人（注册表+凭据+用户飞书端旧会话）再重建。该参数只申请权限，不会自动入群；群主还须在飞书桌面端或移动端把应用机器人加入目标群。老板单聊回传必须用日志中的真实 sender open_id，禁止用其他客户 id。
 5. 调用 `feishu_onboard(action=status, runId=...)` 与 `feishu_status`，直到 connected；再让用户发送唯一测试消息，必须验证 DSH 收到、正确会话被唤醒且飞书收到回复。
 6. `dsh-feishu-bridge >=0.4.0` 默认支持一家公司一个老板 App：P2P 用唯一精确 `/成员名 正文` 或 `/岗位名 正文` 虚拟路由员工；未知、重名、空正文必须 fail-closed。只有需要不同头像/名称、独立身份或租户隔离时才创建员工 App。
 7. 测试版先供创建者验收；需要更大可用范围时再发布版本/管理员审核，不阻塞首次连通。

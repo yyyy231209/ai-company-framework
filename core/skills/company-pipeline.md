@@ -55,7 +55,7 @@ P0 需求解析 → P1 模型路由 → P2 一键建司 → P3 飞书接入（�
 ### P3 飞书接入（与 P4 并行）
 - 默认走官方一键创建：`feishu_onboard(action=start)` → 用户只打开一次官方确认链接 → SDK 自动创建机器人、最小权限、`im.message.receive_v1`、WebSocket → App Secret 自动 DPAPI 加密 → 自动绑定公司；再用 `feishu_onboard(action=status)` / `feishu_status` 验证。
 - 全流程见 `company-pipeline/feishu-onboarding-sop.md`。禁止默认用 Chrome 逐页建应用；只有绑定历史应用或发布到更大可用范围时才走备用路径。
-- 关键坑：老板机器人 `kind=boss`；员工机器人必须 `kind=staff` 且 `staffMemberId=<AgentTeams member.id>`；`allowGroup=true` 只申请群 @ 权限，群主仍须用飞书桌面端/移动端把 App 加入群；注册表支持热加载，只有宿主插件代码变更才需 `Ctrl+Shift+R` 重启 Harness。
+- 关键坑：老板机器人 `kind=boss`；员工机器人必须 `kind=staff` 且 `staffMemberId=<AgentTeams member.id>`；**默认 `allowGroup=true` 一次全开**（单聊+群聊），`allowGroup` 只申请群 @ 权限，群主仍须用飞书桌面端/移动端把 App 加入群；**禁止重复授权**（已 connected 不重新 start，防新建第二套机器人）；客服岗重建后必须同步更新 registry 的 `staffMemberId`；老板单聊回传用日志真实 sender open_id；注册表支持热加载，只有宿主插件代码变更才需 `Ctrl+Shift+R` 重启 Harness。
 - 桥 `>=0.4.0` 默认一家公司一个老板 App：P2P 用唯一精确 `/成员名 正文` 或 `/岗位名 正文` 虚拟路由；员工回复原样传系统通道的 `botId/receiveId/receiveIdType`。需要不同身份/头像或租户隔离时才创建独立员工 App。
 
 ### P4 任务调度
@@ -167,10 +167,10 @@ P0 需求解析 → P1 模型路由 → P2 一键建司 → P3 飞书接入（�
 1. 老板机器人已 connected（P3 完成）
 2. 老板问：「是否需要为员工创建子机器人？（如客服机器人直接对接客户）」
 3. 用户回答 → 立刻执行，不等待：
-   - 需要客服机器人 → 调用 `feishu_onboard(action=start, kind=staff, staffMemberId=<客服 member.id>, displayName=<公司名·客服助手>)`
+   - 需要客服机器人 → 调用 `feishu_onboard(action=start, kind=staff, staffMemberId=<客服 member.id>, displayName=<公司名·客服助手>, allowGroup=true)`
      → 把一次性官方确认链接交给用户打开 → 用户确认一次 → SDK 自动加密凭据、写 registry、建长连接并绑定员工
    - 需要其他员工机器人 → 同流程，仍用 `kind=staff`，以 `staffMemberId` 精准绑定岗位成员
-   - 只有用户明确要求群聊时才传 `allowGroup=true`；默认 P2P 最小权限；群主随后仍需在飞书桌面端/移动端把应用机器人加入目标群
+   - **默认 `allowGroup=true` 一次全开**（单聊+群聊）；权限≠入群，群主随后仍需在飞书桌面端/移动端把应用机器人加入目标群；已 connected 的机器人禁止重复 start
 4. 调用 `feishu_onboard(action=status, runId=...)` 与 `feishu_status`；connected 后由用户发「测试」做端到端收发
 5. 交付团队框架：团队+员工+机器人全部就位清单 → 汇报用户
 ```
