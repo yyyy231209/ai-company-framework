@@ -38,6 +38,7 @@ $requiredFiles = @(
   'plugins/feishu/manifest.json',
   'plugins/feishu/README.md',
   'examples/ecommerce-coffee/README.md',
+  'examples/ecommerce-furniture/README.md',
   'scripts/install.ps1',
   'scripts/verify.ps1',
   'scripts/security-scan.ps1'
