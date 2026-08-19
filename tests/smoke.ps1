@@ -37,6 +37,9 @@ $requiredFiles = @(
   'docs/TROUBLESHOOTING.md',
   'plugins/feishu/manifest.json',
   'plugins/feishu/README.md',
+  'manifest.json',
+  'scripts/validate-manifest.ps1',
+  'docs/DSHMARKET-SUBMISSION.md',
   'examples/ecommerce-coffee/README.md',
   'examples/ecommerce-furniture/README.md',
   'scripts/install.ps1',
@@ -70,6 +73,17 @@ try {
   Check 'feishu manifest id' ($manifest.id -eq 'feishu') 'bad id'
 } catch {
   Check 'feishu manifest parses' $false $_.Exception.Message
+}
+
+# 7. Framework manifest (for marketplace / dshmarket submission)
+try {
+  $rootManifest = Get-Content -Raw -Encoding UTF8 (Join-Path $Root 'manifest.json') | ConvertFrom-Json
+  Check 'framework manifest exists'     ($rootManifest.id -eq 'ai-company-framework') 'bad id'
+  Check 'framework manifest version'   ($rootManifest.version -eq '0.1.1') 'bad version'
+  Check 'framework manifest category'  ($rootManifest.categories.Count -ge 3) 'missing categories'
+  Check 'framework manifest skills'    ($rootManifest.skills.Count -ge 14) 'missing skills'
+} catch {
+  Check 'framework manifest parses' $false $_.Exception.Message
 }
 
 # 7. Security scan

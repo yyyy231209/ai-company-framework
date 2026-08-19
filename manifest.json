@@ -1,0 +1,64 @@
+{
+  "schemaVersion": "plugin-manifest/v1",
+  "id": "ai-company-framework",
+  "name": "AI Company Framework",
+  "version": "0.1.1",
+  "description": "Multi-agent company and workflow starter kit for DeepSeek Harness: role templates, model routing rules, task graph conventions, QA/rework, delivery packaging, and an optional Feishu plugin.",
+  "minFrameworkVersion": "2.0",
+  "author": "AI Company Framework contributors",
+  "license": "MIT",
+  "homepage": "https://github.com/yyyy231209/ai-company-framework",
+  "categories": [
+    "multi-agent",
+    "agent-framework",
+    "workflow",
+    "starter-kit",
+    "deepseek-harness",
+    "dsh-desktop"
+  ],
+  "tags": [
+    "multi-agent",
+    "agent-framework",
+    "deepseek-harness",
+    "dsh-desktop",
+    "no-code",
+    "workflow-automation",
+    "company",
+    "feishu"
+  ],
+  "skills": [
+    { "file": "core/skills/company-boss.md", "kind": "framework", "name": "company-boss" },
+    { "file": "core/skills/company-pipeline.md", "kind": "framework", "name": "company-pipeline" },
+    { "file": "core/skills/company-role-template.md", "kind": "framework", "name": "company-role-template" },
+    { "file": "core/skills/role-writer.md", "kind": "role", "name": "writer" },
+    { "file": "core/skills/role-customer-service.md", "kind": "role", "name": "customer-service" },
+    { "file": "core/skills/role-qa.md", "kind": "role", "name": "qa" },
+    { "file": "core/skills/role-researcher.md", "kind": "role", "name": "researcher" },
+    { "file": "core/skills/role-editor.md", "kind": "role", "name": "editor" },
+    { "file": "core/skills/role-finance.md", "kind": "role", "name": "finance" },
+    { "file": "core/skills/role-hr.md", "kind": "role", "name": "hr" },
+    { "file": "core/skills/role-ops.md", "kind": "role", "name": "ops" },
+    { "file": "core/skills/role-coder.md", "kind": "role", "name": "coder" },
+    { "file": "core/skills/role-data.md", "kind": "role", "name": "data" },
+    { "file": "core/skills/role-translator.md", "kind": "role", "name": "translator" }
+  ],
+  "hooks": {
+    "afterCompanyCreate": [
+      { "type": "ps1", "path": "scripts/install.ps1" }
+    ],
+    "beforeFirstTask": [],
+    "afterTaskComplete": [],
+    "beforeDelivery": []
+  },
+  "requires": [],
+  "conflicts": [],
+  "optionalPlugins": [
+    {
+      "id": "feishu",
+      "name": "Feishu Bridge",
+      "version": "0.4.0-staging",
+      "manifest": "plugins/feishu/manifest.json",
+      "description": "Feishu P2P and group chat with staff bots bound by staffMemberId."
+    }
+  ]
+}
