@@ -4,7 +4,7 @@
   "name": "AI Company Framework",
   "version": "0.1.1",
   "description": "Multi-agent company and workflow starter kit for DeepSeek Harness: role templates, model routing rules, task graph conventions, QA/rework, delivery packaging, and an optional Feishu plugin.",
-  "minFrameworkVersion": "2.0",
+  "minFrameworkVersion": "1.9.0",
   "author": "AI Company Framework contributors",
   "license": "MIT",
   "homepage": "https://github.com/yyyy231209/ai-company-framework",
