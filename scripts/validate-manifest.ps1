@@ -28,8 +28,17 @@ function Test-File([string]$path,[string]$label){
   if($m.schemaVersion -ne 'plugin-manifest/v1'){ Write-Warning "  bad schemaVersion: $($m.schemaVersion)"; $script:issues++ }
   if([string]::IsNullOrWhiteSpace($m.id)){ Write-Warning "  empty id"; $script:issues++ }
   if([string]::IsNullOrWhiteSpace($m.version)){ Write-Warning "  empty version"; $script:issues++ }
-  foreach ($hk in $requiredHookKeys){
-    if(-not $m.hooks.$hk){ Write-Warning "  missing hook array: $hk"; $script:issues++ }
+  if($null -eq $m.hooks){
+    Write-Warning "  missing hooks object"; $script:issues++
+  } else {
+    foreach ($hk in $requiredHookKeys){
+      $present = $m.hooks.PSObject.Properties.Name -contains $hk
+      if(-not $present){
+        Write-Warning "  missing hook array: $hk"; $script:issues++
+      } elseif($null -eq $m.hooks.$hk){
+        Write-Warning "  hook array is null: $hk"; $script:issues++
+      }
+    }
   }
   foreach ($s in @($m.skills)){
     if([string]::IsNullOrWhiteSpace($s.file)){ Write-Warning "  skill missing file"; $script:issues++ }
