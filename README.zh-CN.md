@@ -1,191 +1,94 @@
-# AI Company Framework
+﻿# AI Company Framework
 
 > **Company Is a Word.**
 >
-> 一套运行在 DeepSeek Harness 中的多 Agent 公司与工作流 Starter Kit。描述目标后，它会创建团队、按岗位分配模型、建立任务依赖、执行质检并整理交付。团队可以在 AgentTeams 面板中实时查看，也可以通过员工侧边栏或飞书分别与成员沟通。
-
+> 涓€涓湡瀹炲彲瀹夎鐨?DeepSeek Harness `dsh.bundle`锛?*涓€娆′笅杞姐€佷竴娆″畨瑁?*鍗冲彲鑾峰緱澶?Agent 鍏徃 Skills銆佸伐浣滄祦妯℃澘銆丄gentTeams 杩愯鏃朵笌娲诲姩闈㈡澘銆佸憳宸ヤ晶杈规爮锛屼互鍙婂甫瀹樻柟鎺ュ叆鍚戝鐨勯涔︽満鍣ㄤ汉妗ャ€?
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Release](https://img.shields.io/badge/Release-v0.1.1-blue)](RELEASE_NOTES.md)
+[![Release](https://img.shields.io/badge/Release-v0.3.10-blue)](RELEASE_NOTES.md)
 
-[English](README.md) | [简体中文](README.zh-CN.md)
+[English](README.md) | [绠€浣撲腑鏂嘳(README.zh-CN.md)
 
-## 基于 DeepSeek Harness 与 DSH Desktop
+## Bundle 鍖呭惈浠€涔堬紙v0.3.0锛?
+- **14 涓墎骞?Skills**锛歚company-boss`銆乣company-pipeline`銆乣company-role-template` 鍜?11 涓矖浣?Skills銆?- **7 涓伐浣滄祦妯℃澘**锛坄core/templates/`锛夈€?- **AgentTeams 杩愯鏃?+ Web 娲诲姩闈㈡澘**锛氫互渚濊禆 `@nanmicoder/dsh-agent-teams@0.1.10`锛圡IT锛夋墦鍖咃紝骞剁敱鏈寘 patch 鎸傝浇涓虹嫭绔?Cordis row銆傚洟闃熷垱寤恒€佹垚鍛樹細璇濄€佷緷璧栦换鍔′笌娲诲姩鏍戝紑绠卞嵆鐢紝鏃犻渶棰濆瀹夎銆?- **鍛樺伐渚ц竟鏍忥紙host + Web UI锛?*锛歚plugins/sidebar/` + 澶嶅悎 `client.js`鈥斺€斿崟鍛樺伐鏃犳崯妯″瀷鏀归厤銆佸疄鏃朵細璇?宸ュ叿璋冪敤鏌ョ湅銆佸彂娑堟伅銆傛敹缂栬嚜鑾锋巿鏉冪殑鏈湴渚ф爮鍖咃紙瑙?`NOTICE.md`锛夈€?- **椋炰功鏈哄櫒浜烘ˉ锛坔ost + Web UI锛?*锛歚plugins/feishu/lib/` + 澶嶅悎 `client.js`鈥斺€斿畼鏂?registerApp 鎵爜 onboarding銆丏PAPI 鍑嵁銆丯 鏉￠暱杩炴帴銆佺簿鍑嗚矾鐢变笌 `feishu_*` 宸ュ叿銆傛敹缂栬嚜鑾锋巿鏉冪殑鏈湴 `dsh-feishu-bridge@0.3.1` 骞舵洿鍚?`ai-company-framework-feishu`锛堣 `NOTICE.md`锛夈€?- 鍘熺敓 Bundle 鍏ュ彛 `index.js`銆佸鍚堝鎴风 bundle `client.js`銆佸弻 row Cordis patch `cordis.patch.yml`銆?- 涓嶅寘鍚?RAG 鎴栧悜閲忔绱緷璧栥€?
+Bundle 閫氳繃瀹樻柟 `@deepseek-ai/dsh-skill-filesystem` provider 鎸傝浇鍖呭唴 Skill 鏍圭洰褰曪紝涓嶄細鎶婃枃浠跺鍒惰繘鐢ㄦ埛鑷繁鐨?Skills 鐩綍銆?
+## 鍝簺姝ラ蹇呴』浜哄伐锛堜笉鍋氳嚜鍔ㄥ寲锛屽睘璁捐锛?
+- **妯″瀷鎻愪緵鏂?*锛氫細璇濊繍琛屽墠锛岄渶鍦ㄥ涓昏缃腑閰嶇疆浣犺嚜宸辩殑 provider API Key銆?- **椋炰功鎺堟潈**锛氶娆′娇鐢ㄩ涔︿細鎵撳紑瀹樻柟 `registerApp` 纭閾炬帴/浜岀淮鐮佲€斺€旀壂鐮併€佺鐞嗗憳瀹℃壒銆佹満鍣ㄤ汉鍏ョ兢閮藉湪椋炰功瀹樻柟椤甸潰瀹屾垚銆傛巿鏉冨墠 Bundle 缁濅笉瀛樺偍 App Secret锛堜粎缁?Windows DPAPI銆丆urrentUser 浣滅敤鍩熸湰鍦板姞瀵嗭級锛屼笖**鍙湁鐪熷疄 WebSocket 寤虹珛鍚庢墠鎶?connected**銆?- **宸ヤ綔鍖洪€夋嫨**锛氭柊寤轰細璇濋渶瑕?DSH Desktop 鍘熺敓鐩綍閫夋嫨妗ャ€?- **鍙戝竷**锛氭湰浠撳簱涓嶅湪鏈粡鏄庣‘浜哄伐纭鐨勬儏鍐典笅鍙戝竷 npm 鍖呫€佸垱寤?GitHub Release銆佹帹閫佸垎鏀垨鎻愪氦澶栭儴 PR銆?
+## 鑳藉姏杈圭晫
 
-本项目不是替代底层运行时，而是在它们之上增加一层公司与工作流编排：
+- 妯″瀷銆佸伐鍏枫€佷細璇濄€丼kills 鍜?Bundle 杩愯鏃剁敱 DeepSeek Harness 鎻愪緵銆?- AgentTeams 鎵ц銆佹椿鍔ㄩ潰鏉裤€佸憳宸ヤ晶杈规爮涓庨涔︽爮**鐢辨湰 Bundle 瀹炵幇**锛堜緷璧栨垨鏀剁紪浠ｇ爜锛夛紝瀹夎鍗宠嚜鍔ㄦ縺娲伙紝鏃犻渶鍙﹁鎻掍欢銆?- 椋炰功鎺堟潈鏄汉宸ラ椄闂紱staging 鑳藉姏锛坆ridge 0.4.0 澶氬矖浣嶈櫄鎷熻矾鐢便€佺绾块噸鎶曪級鏈寘涓嶅绉扮ǔ瀹氥€?- 璇氬疄鐘舵€佸師鍒欙細鏈畨瑁?鏈巿鏉?绂荤嚎涓€寰嬪瀹炲睍绀哄苟缁欏紩瀵硷紝缁濅笉璋庢姤灏辩华鎴?connected銆?
+## 瀹夎
 
-- [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 提供模型接入、工具调用、持久会话、Skills 和插件运行时；
-- [DSH Desktop](https://github.com/dataelement/dsh-desktop) 把 Harness 做成可直接使用的桌面应用，并提供 AgentTeams 活动面板、员工侧边栏等可视化交互；
-- AI Company Framework 提供岗位模板、模型路由策略、任务依赖、质检返工、交付规范、飞书接入和多实例隔离。
+璇烽€夋嫨瀹為檯浣跨敤鐨?Harness profile锛涗互涓嬩粎浠?`web` 涓轰緥銆?
+```powershell
+# npm 鍖呭彂甯冨悗
+dsh plugin --profile web add ai-company-framework
 
-如果你第一次接触这个项目，建议先安装 DSH Desktop，再运行本仓库的安装脚本。
+# 鎴栫洿鎺ュ畨瑁呭寘鏂囦欢
+dsh plugin --profile web add .\ai-company-framework-0.3.0.tgz
+```
 
-## 当前定位
+浠庡皻鏈彂甯冪殑浠撳簱 checkout 瀹夎锛?
+```powershell
+npm pack
+dsh plugin --profile web add .\ai-company-framework-0.3.0.tgz
+```
 
-`v0.1.1` 是一套可复用的 Harness Skills、模板、SOP 和安装脚本，定位是 **multi-agent starter kit**。它不是独立 Agent 运行时，也不替代 Harness 的执行能力。当前编排规则主要由 Skills 驱动；本版本不包含声明式公司编译器、代码化模型路由器、自动插件加载器或独立执行引擎。
-
----
-
-![架构图](assets/architecture.svg)
-
-## 真实运行截图
-
-### 一句话 → 一家开始运转的 AI 公司
-
-![在 DeepSeek Harness 中创建家具 AI 公司](assets/screenshots/company-created.png)
-
-### AgentTeams 员工活动与任务依赖图
-
-![AgentTeams 员工和任务依赖图](assets/screenshots/agentteams-activity.png)
-
-### 打开任意员工：查看工作、直接发消息或更换模型
-
-![员工侧边栏、模型路由与直接消息](assets/screenshots/employee-sidebar.png)
-
----
-
-## 核心能力
-
-### 直接装进 Harness
-
-项目不需要额外部署服务器或数据库。安装 [DSH Desktop](https://github.com/dataelement/dsh-desktop) 并登录，运行 `install.ps1`，技能文件就会复制到 Harness 的技能目录。模型、工具、会话和 AgentTeams 由 Harness 提供，本项目负责组织团队和工作流。
-
-### 一句话创建团队
-
-输入业务方向和目标，老板会确定岗位、模型路由、文件目录和第一批任务。任务可以并行执行，并经过质检、返工和最终交付。没有明确的数据时，框架会列出假设，不会编造业务事实。
-
-### 按岗位自动分配模型
-
-创建团队前，老板会读取当前可用的模型列表，而不是写死某个模型。视觉岗位优先使用支持图像输入的模型，策划、研发和复核岗位使用强推理模型，文案、客服和批处理任务使用速度更快、成本更低的模型，长时间任务也会优先考虑配额和运行成本。这样可以把高成本模型留给关键环节，减少 Token 和账号配额的浪费。分配完成后，仍可在员工侧边栏单独调整任意成员的模型。
-
-### 实时查看 AgentTeams
-
-AgentTeams 面板会显示每个成员的状态、任务归属和整体进度。任务依赖图可以看到哪些任务正在并行、哪些在等待上游。通过员工侧边栏，还可以查看任意成员的独立对话和工具执行记录。
-
-### 单独调教每个子 Agent
-
-每个成员都有自己的持久会话、邮箱和 Skill 文件。你可以直接给某个成员发消息，也可以单独修改它的模型路由，不需要重建团队或清空对话。员工入职时会补全自己的 Skill，工作中发现更好的做法也会继续维护；输入输出契约仍由老板把关。
-
-### 通过飞书远程控制
-
-飞书插件是可选组件。它使用官方 `registerApp()` 创建机器人：用户打开一次确认链接后，应用、机器人、权限、事件订阅、WebSocket 和加密凭据会自动配置。
-
-老板机器人用于远程下任务、查进度和接收回复；员工机器人通过 `staffMemberId` 绑定到指定成员，可以直接和客服或其他子 Agent 对话。里程碑也可以推送到飞书群。老板/员工 P2P 已完成验证；单个老板机器人内的多岗位虚拟路由仍属于 `dsh-feishu-bridge 0.4.0` staging（飞书桥与本项目分别版本化）。
-
-详见 [`plugins/feishu/README.md`](plugins/feishu/README.md)。
-
-### 公司只是一个预设，也可以搭完整工作流
-
-岗位可以看作工作流节点。每个节点有明确的输入、输出和验收标准，任务之间用依赖图连接，并支持并行、批次验收和返工。除了公司组织，也可以用它搭内容生产、研究报告、软件开发、客服运营、视频制作或数据分析流程。
-
-### 可以继续加插件和自定义岗位
-
-项目可以组合 Harness 的模型、工具、Skills 和客户端插件。本框架同时提供 `plugin-manifest/v1`，用于增加岗位、技能、脚本和生命周期 Hooks。仓库内置 11 个常用岗位；缺少的岗位可以按 `company-role-template` 创建。
-
-### 可以同时运行多家公司或工作流
-
-一个顶层会话对应一个独立实例。新建会话即可创建下一家公司或工作流，每个实例都有自己的团队、任务、技能、文件目录和可选飞书机器人，彼此不共享业务数据。
-
----
-
-## 快速开始（3 步）
-
-### 前置条件
-
-- Windows 10/11
-- [DSH Desktop](https://github.com/dataelement/dsh-desktop) 已安装并登录（它将 DeepSeek Harness 封装为桌面应用）
-
-### 第 1 步：把框架装进 Harness
+> 璇蜂粠**鎵撳寘濂界殑 `.tgz` 鎴?registry 渚濊禆**瀹夎锛屼笉瑕佷粠婧愮爜鐩綍鐩存帴 `add`锛歚dsh plugin add <鐩綍>` 浼氳褰曚负 `link:` 渚濊禆锛屽叾鑷韩渚濊禆涓嶄細琚畨瑁呫€?
+瀹夎鍚庢柊寤轰竴涓?Harness 浼氳瘽锛屼娇鏂颁細璇濊幏寰楁洿鏂板悗鐨?Skill 鐩綍銆佸苟璁?Web UI 鎸傝浇娲诲姩闈㈡澘/鍛樺伐渚ф爮/椋炰功鏍忥紝鐒跺悗鐩存帴鎻忚堪鍏徃鎴栧伐浣滄祦鐩爣锛?
+> 銆屾惌涓€鏉＄數鍟嗗唴瀹规祦姘寸嚎锛氳皟鐮斻€佸啓浣溿€佽川妫€銆佸畾鍚戣繑宸ャ€佷氦浠樸€傘€?
+## 鍗歌浇
 
 ```powershell
-# 进入仓库目录
-cd ai-company-framework
-# 一键安装（把 core/skills 复制到 Harness 技能目录）
-.\scripts\install.ps1
-# 自检环境
-.\scripts\verify.ps1
+dsh plugin --profile web remove ai-company-framework
 ```
 
-### 第 2 步：新建一个会话
+鍘熺敓鍗歌浇浼氱Щ闄?profile 渚濊禆銆丅undle layer 涓庡寘鐩綍锛堝惈瀛ゅ効浼犻€掍緷璧栵級銆傛湰鍖呬粠涓嶅悜鐢ㄦ埛 Skill 鏍圭洰褰曞鍒舵枃浠讹紝鍥犳涓嶄細鐮村潖宸叉湁鐢ㄦ埛 Skills銆備綘鑷繁鐨勬暟鎹€斺€斿叕鍙稿洟闃熴€侀涔﹀嚟鎹?娉ㄥ唽琛ㄣ€佹棩蹇椻€斺€旀寜璁捐淇濈暀锛堥厤缃洖婊?鈮?鏁版嵁娓呴櫎锛夈€?
+## 楠岃瘉
 
-在 Harness 里 **新建会话**（不要复用旧会话——一个会话只能开一家公司，新会话 = 新公司）。
+褰撳墠鍊欓€夌増鏈凡鍦?DSH Desktop 鍐呯疆 `@deepseek-ai/dsh 0.1.0-rc.8` 涓婇獙璇併€傚畠鏄疄娴嬪熀绾匡紝涓嶆槸鑷畾涔?`minFrameworkVersion` 鍗忚銆?
+```powershell
+node tests\bundle-check.mjs
+node tests\client-feishu-check.mjs
+powershell -ExecutionPolicy Bypass -File tests\smoke.ps1
+powershell -ExecutionPolicy Bypass -File scripts\security-scan.ps1
 
-### 第 3 步：说一句话
-
-> 「我要开一家卖精品咖啡豆的电商公司，首单产出一篇小红书种草笔记和客服话术包。」
-
-也可以直接描述一条工作流：
-
-> 「搭一条研究报告流水线：调研员找资料，分析员整理数据，撰稿人写报告，质检员核对引用后再交付。」
-
-老板会先确认影响架构的必要信息，然后创建团队和任务图。
-
-## 它能做什么？
-
-| 能力 | 说明 |
-|------|------|
-| Harness 原生运行 | 复用 Harness 的模型、工具、会话、Skills 和插件 |
-| 一句话建团队 | 根据目标创建岗位、团队、目录和首批任务 |
-| 模型自动路由 | 读取可用模型列表，按岗位能力、速度、成本和配额分配 |
-| AgentTeams 监控 | 实时查看成员状态、任务归属、依赖图和执行进度 |
-| 子 Agent 单独调教 | 独立对话、独立换模型、独立 Skill、持久上下文 |
-| 工作流编排 | 串行/并行任务、文件契约、质检、返工和交付 |
-| 飞书远程控制 | 一键创建老板/员工机器人，并与指定 Agent 对话 |
-| 插件扩展 | 通过 Harness 插件和 `plugin-manifest/v1` 增加能力 |
-| 多实例隔离 | 一个会话一个实例，可同时运行多家公司或工作流 |
-| 经验沉淀 | 只共享去敏流程经验，不共享业务数据 |
-
-## 目录结构
-
-```text
-ai-company-framework/
-├─ core/                      # 框架本体
-│  ├─ skills/                 # 老板总控 + 流水线 + 11 个岗位技能
-│  ├─ templates/              # 任务/质检/交付/返工模板
-│  └─ feishu-onboarding-sop.md
-├─ plugins/                   # 可选插件（飞书等）
-│  └─ feishu/
-├─ scripts/                   # 安装/自检/安全扫描
-├─ docs/                      # 小白文档 + 插件开发指南
-├─ examples/                  # 示例公司
-├─ tests/                     # 冒烟测试
-└─ LICENSE (MIT)
+# 鐪熷疄闅旂 pack/install/load/uninstall
+powershell -ExecutionPolicy Bypass -File tests\install-bundle.ps1 `
+  -DshBin '<@deepseek-ai\dsh\lib\bin.js 鐨勮矾寰?'
 ```
 
-## 插件接口
+闅旂楠屾敹锛圥3/P4/P6锛屽彲澶嶇幇锛夛細鍏ㄦ柊涓存椂 `DSH_HOME` + 鏂?profile + 鐪熷疄 `.tgz`鈥斺€斿弻 row 缁勫悎锛坄ai-company-framework` + `agent-teams`锛夈€?4 Skills 缁忓凡瀹夎 provider 閫愪釜浣撴銆乣feishu_*` 宸ュ叿娉ㄥ唽銆亀eb profile 鐪熷疄鍚姩涓?`window.__DSH_BOOT__` 鍚弻 client bundle銆佷晶鏍?state/reconfigure 璺敱銆侀涔︽湭鎺堟潈鎬侊紙0 bots銆? connected锛夈€佸嵏杞介浂娈嬬暀涓旂敤鎴?Skill 鍝ㄥ叺鍝堝笇涓嶅彉銆備緵搴旈摼锛?4 鍖呴棴鍖?0 缂哄け璁稿彲銆乣pnpm audit --prod` 鏃犳紡娲炪€佷笉渚濊禆 unscoped `dsh-feishu-bridge`銆?
+> 瀹夎鏈?pnpm 鍙兘鍑虹幇 "peers missing" 鍛婅锛欴SH profile 浠?`autoInstallPeers:false` 杩愯锛宍@deepseek-ai/cordis` 涓庡悇 `@deepseek-ai/dsh-*` peer 鐢卞涓婚棴鍖呭湪杩愯鏃惰В鏋愩€傝繖鏄鏈熻涓猴紝涓嶆槸瀹夎澶辫触銆?
+## 鍖呭唴绋冲畾璧勬簮璺緞
 
-`v0.1.1` 提供 `plugin-manifest/v1` 规范和飞书示例，用于声明插件贡献的 Skills、脚本和生命周期 Hooks。当前由本项目的 `install.ps1` 把 Skills 安装到 Harness 技能目录，再由 Harness 加载和执行；本版本不包含独立的自动插件加载器。
+浠?`core/skills/*.md` 鍑哄彂锛?
+- 妯℃澘锛歚../templates/`
+- 椋炰功 SOP锛歚../feishu-onboarding-sop.md`
 
-- **挂载点**：建司后、首个任务前、任务完成后、交付前；
-- **Skill 注入**：插件可增加岗位和领域能力；
-- **脚本 Hooks**：可调用 PowerShell 或 Node 脚本；
-- **隔离约束**：插件不得读取其他实例的数据，凭据不得进入仓库。
+provider 浣跨敤 `import.meta.url` 瑙ｆ瀽鍖呮牴锛屼笉渚濊禆 checkout 璺緞銆乄indows 鐢ㄦ埛鍚嶆垨褰撳墠 Session ID銆?
+## 鏃ф墜宸ヨ剼鏈?
+`scripts/install.ps1` 浠呬负鏃х増鎵嬪伐澶嶅埗娴佺▼淇濈暀锛屼笉杩涘叆 npm 鍖呫€傛寮?Bundle 璺緞鏄?`dsh plugin --profile <name> add <package-or-source>`銆?
+## 杩愯鎴浘
 
-规范见 [`docs/PLUGINS.md`](docs/PLUGINS.md)，飞书示例见 [`plugins/feishu/`](plugins/feishu/README.md)。
+![鏋舵瀯鍥綸(assets/architecture.svg)
 
-## 文档
+| AgentTeams 娲诲姩 | 鍛樺伐渚ц竟鏍?|
+|---|---|
+| ![AgentTeams 娲诲姩](assets/screenshots/agentteams-activity.png) | ![鍛樺伐渚ц竟鏍廬(assets/screenshots/employee-sidebar.png) |
 
-- [快速开始（详细版）](docs/QUICKSTART.md)
-- [架构说明](docs/ARCHITECTURE.md)
-- [插件开发指南](docs/PLUGINS.md)
-- [常见问题 FAQ](docs/FAQ.md)
-- [故障排查](docs/TROUBLESHOOTING.md)
+![鍏徃宸ヤ綔娴乚(assets/screenshots/company-created.png)
 
-## 贡献
+鎴浘宸茶劚鏁忥紝灞曠ず鐨勬槸鏈?Bundle 鎺ョ嚎鐨勫涓荤晫闈㈣兘鍔涳紱涓嶄唬琛ㄨ繖浜?UI 缁勪欢浠ｇ爜浣嶄簬鏈寘鍐呫€?
+## 鏂囨。
 
-欢迎任何形式的贡献——问题、想法、插件、文档、PR。
-请先读 [CONTRIBUTING.md](CONTRIBUTING.md) 与 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)。
+- [蹇€熷紑濮媇(docs/QUICKSTART.md)
+- [鏋舵瀯璇存槑](docs/ARCHITECTURE.md)
+- [Bundle 涓庢墿灞曟寚鍗梋(docs/PLUGINS.md)
+- [FAQ](docs/FAQ.md)
+- [鏁呴殰鎺掓煡](docs/TROUBLESHOOTING.md)
+- [awesome-dsh-plugin 鎻愪氦鍑嗗](docs/DSHMARKET-SUBMISSION.md)
 
-## 路线图
-
-- [x] v0.1.1：Skills Starter Kit、11 个岗位、任务/质检/交付模板、模型路由规则、AgentTeams 监控和飞书 P2P 接入
-
-## 许可证
-
-[MIT](LICENSE) © 2026 AI Company Framework contributors
-
-## 免责声明
-
-- 本框架生成的内容（文案/方案/代码）需人工把关后使用，不构成专业建议。
-- `dsh-feishu-bridge 0.4.0` 多岗位虚拟路由为 staging，生产部署前请自行评估。
-- 群机器人入群与镜像 webhook 需在飞书客户端手动操作。
+## 澹版槑锛圢OTICE锛?
+- 鏀剁紪缁勪欢鏉ユ簮銆佹巿鏉冧笌渚涘簲閾捐竟鐣岃 [NOTICE.md](NOTICE.md)銆備袱涓敹缂栫粍浠舵潵鑷幏鏄庣‘鎺堟潈鐨勬湰鍦?`private:true` 鍖咃紱寮€婧愪緷璧?`@nanmicoder/dsh-agent-teams` 鍙渚濊禆銆佷笉澶嶅埗婧愮爜銆?- 鏈寘**缁濅笉渚濊禆** unscoped npm 鍖?`dsh-feishu-bridge`锛堜笌鏀剁紪婧愮爜鏃犲叧鐨勭涓夋柟鍖咃紝鏃?`dsh.bundle` 鑳藉姏锛夈€?
+## 璁稿彲璇?
+[MIT](LICENSE) 漏 2026 AI Company Framework contributors

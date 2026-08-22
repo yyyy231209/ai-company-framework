@@ -3,15 +3,14 @@
 > 目标：发布后 30 天内获得第一批真实 star、issue 与贡献者。
 > star 是结果不是目标——目标是让「小白 5 分钟开 AI 公司」的价值被看见、被验证、被传播。
 
-## 1. 发布前检查（已完成 ✅）
+## 1. 发布前检查（候选材料已就绪，外部动作待人工确认）
 
-- [x] 中文 README（5 大卖点）— README.zh-CN.md
-- [x] 英文 README（全球 star 池）— README.md
+- [x] 中英文 README 已按原生 Bundle `0.3.0` 更新（单下载满血聚合口径）
 - [x] MIT 许可证 + CONTRIBUTING + CODE_OF_CONDUCT
-- [x] 12 个 GitHub Topics（multi-agent / agent-framework / no-code …）
-- [x] v0.1.1 tag + Release 发布说明
-- [x] 冒烟测试 33 项全绿 + 安全扫描通过
-- [x] 无个人信息/业务数据/凭据
+- [x] Bundle/smoke/security/metadata/隔离安装与卸载测试通过
+- [x] 14 Skills、7 模板与发布包资源核对通过
+- [x] 截图、文本路径、凭据与 Session 标识安全复核通过
+- [ ] npm 发布、GitHub tag/Release、push 与外部 PR（必须由仓库所有人明确确认后执行）
 
 ## 2. 冷启动三件套（发布后立刻做）
 
@@ -76,10 +75,10 @@
 - 飞书 0.4.0 标注 staging，不夸大生产可用性；
 - demo 诚实：展示真实跑通的流程，不演示未实现功能。
 
-## 7. 下一步功能钩子（留住 star 用户）
+## 7. 后续候选方向（0.3.0 已交付 AgentTeams/员工侧栏/飞书桥；以下为后续候选）
 
-- v0.2 插件市场雏形（manifest 注册表 + 一键安装）
 - 更多示例公司（餐饮 / 教育 / 游戏 / 咨询）
-- 小白向导 UI（新会话引导式提问）
-- 一键体验脚本（examples 自动加载 + demo 数据）
+- 宿主侧新会话引导体验（需与 DSH Desktop 单独协作）
+- 示例数据与可复现 demo
 - 贡献者指南完善 + good-first-issue 标签
+- 经人工确认后向 `awesome-dsh-plugin/awesome-dsh-plugin` 提交目录条目

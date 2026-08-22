@@ -1,176 +1,193 @@
-# 插件开发指南（给代码爱好者）
+# DSH Bundle 扩展指南
 
-框架从设计上就是可插拔的。**你写的插件可以给框架加岗位、加能力、加流程**，而不用改框架本体。本指南带你从零写一个插件。
+本文只描述当前已验证的 DeepSeek Harness profile Bundle 机制。旧的 `plugin-manifest/v1`、`afterCompanyCreate` hook 和 `minFrameworkVersion` 不是 DSH `0.1.0-rc.8` 会读取的协议，不应作为插件安装契约。
 
-## 1. 插件是什么
+## 1. Bundle 是什么
 
-插件 = 一个目录 + 一份 `manifest.json`：
+Bundle 是一个可由 pnpm 安装的 npm package。包在 `package.json` 中声明一个 patch 文件，DSH CLI 安装成功后把包名加入目标 profile 的 `dsh.profile.bundles`。
+
+最小结构：
 
 ```text
-plugins/<plugin-id>/
-├─ manifest.json     # 插件声明（必填）
-├─ skills/           # 本插件贡献的技能文件（可选）
-├─ scripts/          # 钩子脚本，PowerShell 或 Node（可选）
-└─ README.md         # 给用户的说明（推荐）
+my-dsh-bundle/
+├─ package.json
+├─ cordis.patch.yml
+├─ index.js                 # 只有需要运行时代码时才要
+└─ skills/                  # 可选包内资源
 ```
 
-## 2. manifest.json 规范（schemaVersion: plugin-manifest/v1）
+DSH 特有声明：
 
 ```json
 {
-  "schemaVersion": "plugin-manifest/v1",
-  "id": "my-plugin",
-  "name": "我的插件",
-  "version": "0.1.0",
-  "description": "一句话说明这个插件做什么",
-  "minFrameworkVersion": "2.0",
-  "author": "你的名字/GitHub 账号",
-  "license": "MIT",
-  "skills": [
-    { "file": "skills/role-my-role.md", "roleName": "my-role", "kind": "role" },
-    { "file": "skills/task-helper.md", "kind": "skill" }
-  ],
-  "hooks": {
-    "afterCompanyCreate": [
-      { "type": "ps1", "path": "scripts/setup.ps1" }
-    ],
-    "beforeFirstTask": [],
-    "afterTaskComplete": [],
-    "beforeDelivery": []
-  },
-  "requires": [],
-  "conflicts": []
-}
-```
-
-### 2.1 字段说明
-
-| 字段 | 必填 | 说明 |
-|------|:---:|------|
-| `schemaVersion` | ✅ | 固定 `plugin-manifest/v1` |
-| `id` | ✅ | 插件唯一 ID，小写字母数字+连字符 |
-| `name` | ✅ | 展示名 |
-| `version` | ✅ | 语义化版本 |
-| `description` | ✅ | 给用户的一句话介绍 |
-| `minFrameworkVersion` | 否 | 要求的最低框架版本 |
-| `author` / `license` | 否 | 署名与许可证 |
-| `skills` | 否 | 注入的技能文件（见 3） |
-| `hooks` | 否 | 挂载点脚本（见 4） |
-| `requires` / `conflicts` | 否 | 依赖/冲突的其他插件 ID |
-
-## 3. 注入技能
-
-### 3.1 注入新岗位（kind: role）
-
-给框架加一个全新岗位（如「配音员」）：
-
-1. 写技能文件 `skills/role-voice.md`，内容参考 `core/skills/role-*.md` 的骨架（职责/工具纪律/验收标准/汇报格式）；
-2. 在 manifest 的 `skills` 里声明 `{ "file": "skills/role-voice.md", "roleName": "voice", "kind": "role" }`；
-3. 用户建司时，老板就能在岗位模板里选用「voice」岗位。
-
-### 3.2 注入辅助技能（kind: skill）
-
-给已有岗位补充能力（如给客服加「开单」技能），用 `kind: "skill"`，安装时会作为该岗位的补充技能提示注入。
-
-## 4. 挂载点（hooks）
-
-| 挂载点 | 时机 | 传参（环境变量） |
-|--------|------|------------------|
-| `afterCompanyCreate` | 公司目录+团队创建后 | `DSH_SESSION_ID`、`COMPANY_ROOT`、`TEAM_NAME` |
-| `beforeFirstTask` | 首次派任务前 | 同上 |
-| `afterTaskComplete` | 单个任务完成后 | 同上 + `TASK_ID`、`TASK_OUTPUT` |
-| `beforeDelivery` | 交付打包前 | 同上 |
-
-脚本类型 `ps1`（PowerShell）或 `node`（Node.js）。脚本执行约定：
-
-- **只允许读/写当前 `COMPANY_ROOT` 内**；越界即失败；
-- 输出统一 `Write-Output`（PowerShell）或 `console.log`（Node）一行 JSON 结果：`{"ok":true,"note":"..."}`；
-- 失败返回非 0 退出码 = 该挂载点失败，老板会看到显式报错，不静默跳过；
-- 脚本不得访问凭据文件、不得联网上传数据。
-
-## 5. 安全与隔离红线（插件必须遵守）
-
-1. **公司隔离**：只读写 `COMPANY_ROOT`；禁止扫 `companies/` 父目录、禁止读兄弟公司；
-2. **凭据红线**：App Secret / Token / Cookie / webhook 不得进插件代码、日志、或插件文档；需要存凭据必须走平台加密（如 Windows DPAPI）；
-3. **去敏**：插件不得把客户数据写进共享经验库或任何公共文件；
-4. **确定性**：插件默认不得依赖外部网络服务；需要时在 manifest 声明并在文档说明；
-5. **卸载干净**：插件产生的文件应只在公司目录内，卸载时给出清理脚本。
-
-## 6. 完整示例：做一个「配音插件」
-
-```powershell
-# 目录
-plugins/voice/
-├─ manifest.json
-├─ skills/role-voice.md
-├─ scripts/setup.ps1
-└─ README.md
-```
-
-`manifest.json`：
-
-```json
-{
-  "schemaVersion": "plugin-manifest/v1",
-  "id": "voice",
-  "name": "配音插件",
-  "version": "0.1.0",
-  "description": "给内容公司加一个配音岗位，自动把文案合成为语音",
-  "author": "you",
-  "license": "MIT",
-  "skills": [
-    { "file": "skills/role-voice.md", "roleName": "voice", "kind": "role" }
-  ],
-  "hooks": {
-    "afterCompanyCreate": [{ "type": "ps1", "path": "scripts/setup.ps1" }]
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
   }
 }
 ```
 
-`skills/role-voice.md`（骨架）：
+`dsh-manifest.json` 不是已证实的强制文件。`package.json.files` 也没有全局固定白名单；每个包只需确保发布产物实际包含 patch、入口和被引用资源。
+
+## 2. Patch 规则
+
+`cordis.patch.yml` 顶层必须是数组。最小插件 row：
+
+```yaml
+- insert:
+    - id: my-dsh-bundle
+      name: 'my-dsh-bundle'
+```
+
+规则：
+
+- `id` 应稳定且唯一；
+- `name` 必须能从目标 profile 的模块解析路径导入；
+- later layer 对命中 row 的 `config` 是整值替换，不是深度合并；
+- patch 文件缺失、不可解析或不是顶层数组时，profile 启动失败；
+- 只贡献配置时可以没有自有运行时入口；插入本包作为 Cordis 插件时才需要可导入入口。
+
+不要为了加入 Skill 而覆盖 base 的 `skill-filesystem` row：web profile 会禁用该 host row。应插入独立 provider row。
+
+## 3. 包内 Skill provider
+
+AI Company Framework 采用官方 `@deepseek-ai/dsh-skill-filesystem`，没有重写 frontmatter 解析、Skill catalog 或 watcher：
+
+```js
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { apply as applyFileSystemSkills } from '@deepseek-ai/dsh-skill-filesystem'
+
+export const name = 'my-dsh-bundle'
+export const inject = ['skills']
+
+export function apply(ctx) {
+  applyFileSystemSkills(ctx, {
+    providerName: name,
+    includeDefaultRoots: false,
+    bundledSkillDir: join(dirname(fileURLToPath(import.meta.url)), 'skills'),
+    watch: false,
+  })
+}
+```
+
+对应 package metadata：
+
+```json
+{
+  "type": "module",
+  "main": "./index.js",
+  "peerDependencies": {
+    "@deepseek-ai/dsh-skill-filesystem": "^0.1.0-rc.8"
+  }
+}
+```
+
+为什么这样做：
+
+- `import.meta.url` 让资源路径随实际安装目录解析；
+- `includeDefaultRoots: false` 避免重复扫描用户和项目 Skills；
+- `bundledSkillDir` 把候选标为 bundled；
+- 宿主 peer 不放进普通 dependencies，避免安装第二份 Harness 运行时；
+- 包内资源随 dependency 卸载，无需写用户全局 Skill 目录。
+
+## 4. Skill 与资源格式
+
+文件系统 provider 发现一层：
+
+```text
+skills/<name>.md
+skills/<name>/SKILL.md
+```
+
+不递归发现 `skills/**/SKILL.md`。Frontmatter 至少包含 kebab-case `name` 和字符串 `description`：
 
 ```markdown
-# 岗位：配音员（voice）
-
-- 职责：把文案按语气/节奏合成为语音，输出到公司目录 素材/voice/
-- 输入契约：上游文案文件路径
-- 输出契约：<companyRoot>/素材/voice/<文件>.mp3
-- 模型路由：批处理档
-
-## 验收标准
-- [ ] V1 输入读取不越公司目录
-- [ ] V2 输出文件与上游契约一致
-- [ ] V3 结果可被质检复核
-```
-
-`scripts/setup.ps1`：
-
-```powershell
-# 建司后创建配音素材目录
-$root = $env:COMPANY_ROOT
-New-Item -ItemType Directory -Force -Path (Join-Path $root '素材\voice') | Out-Null
-Write-Output '{"ok":true,"note":"voice dir ready"}'
-```
-
-## 7. 测试你的插件
-
-1. 把插件目录放进 `plugins/`（或你自己的仓库）；
-2. 写一个公司用一下：新建会话 → 说「我要开一家做有声书的公司」→ 建司时看老板是否列出「配音员」岗位；
-3. 检查 `afterCompanyCreate` 钩子是否创建了目录；
-4. 跑冒烟测试：`.\tests\smoke.ps1`（插件级自动化测试在 v0.2 规划中）。
-
-## 8. 提交插件
-
-- 插件放自己仓库，README 里注明「AI Company Framework 插件」；
-- 提供 `manifest.json` 与安装说明；
-- 欢迎 PR 到本仓库 `plugins/` 目录（我们会加「插件市场」索引）。
-
-## 9. 插件市场（规划）
-
-- v0.2 提供 `plugins/index.json` 注册表：插件名 / 作者 / 版本 / 描述 / 仓库地址；
-- 安装命令（规划）：`.\scripts\install-plugin.ps1 -Id <id>`；
-- 一键体验（规划）：示例公司自动加载示例插件。
-
+---
+name: role-voice
+description: 为内容工作流提供配音岗位规程。
+whenToUse: 需要配音岗位时加载。
 ---
 
-**写插件最酷的部分**：你不懂 Agent 内部细节也能加能力——只需一份 manifest + 一个技能文件。剩下的交给框架。
+# 配音岗位
+...
+```
+
+flat Markdown Skill 的资源基准是其所在目录。若 Skill 引用模板：
+
+```text
+skills/role-voice.md
+resources/voice-checklist.md
+```
+
+正文应使用相对路径 `../resources/voice-checklist.md`。资源按需读取，不会自动成为 Skill catalog 条目。
+
+## 5. 安装、升级与卸载
+
+真实命令顺序：
+
+```text
+dsh plugin --profile <name> add <package-spec>
+dsh plugin --profile <name> update <package-name>
+dsh plugin --profile <name> remove <package-name>
+```
+
+`plugin` 是 pnpm 薄转发器。成功后，CLI 按当前依赖状态调和 `dsh.profile.bundles`：
+
+- 新安装 dependency 声明 `dsh.bundle.patch` → 加入 layer；
+- dependency 被 remove → 移除 layer；
+- 升级后新增/删除声明 → 相应激活/停用。
+
+Bundle 变更后重启目标 profile。不要声称自定义 manifest hook 会在安装时运行；当前 CLI 没有这条生命周期。
+
+## 6. 兼容性
+
+- package 版本使用标准 npm `version`；
+- 对宿主能力的兼容范围放在 `peerDependencies`；
+- README 写明实际测试过的 DSH 版本；
+- 不发明 `minFrameworkVersion`、schemaVersion 或 DSH 不读取的兼容字段；
+- prerelease 兼容必须用能覆盖目标 rc 的 semver，并以隔离安装实测为准。
+
+当前项目已验证 DSH `0.1.0-rc.8`。更高版本不能仅凭 semver 推断通过，需重跑真实安装测试。
+
+## 7. UI 与外部服务
+
+- 没有浏览器 UI 就不要声明 `dsh.client`；需要 UI 时，客户端双面契约 = `package.json` 声明 `dsh.client`（`platform: "web"` + `inject` 服务集）+ `exports["./client"]` 指向已构建的 `lib/client.js` 类产物。
+- 客户端发现机制：`@deepseek-ai/dsh-client-modules` 扫描 **Loader entries（组合后的 Cordis rows）**，不是依赖表——一个包只有作为活跃 row 才会被发现并注入 `window.__DSH_BOOT__`；row 的 `name` 与包名必须一致，包需从 profile 根可解析（新 profile 默认 `nodeLinker: hoisted`，注册表传递依赖可解析）。
+- 一个 loader entry 只暴露一个 `./client` bundle：多个 UI 面（如员工侧栏 + 飞书栏）应合并为一个复合 client 模块。
+- 飞书、数据库、网络服务等外部能力必须声明实际 provider 和安装步骤；自 v0.3.0 起本包的 `plugins/feishu/lib/` 已收编飞书桥 host（更名 `ai-company-framework-feishu`），`client.js` 提供飞书栏 UI——授权仍是人工闸门（见 `NOTICE.md`）。
+
+## 8. 测试清单
+
+开发者静态检查：
+
+```powershell
+node tests/bundle-check.mjs
+npm pack --dry-run
+```
+
+真实隔离检查：
+
+```powershell
+powershell -File tests/install-bundle.ps1 -DshBin <path-to-@deepseek-ai/dsh/lib/bin.js>
+```
+
+至少断言：
+
+- profile dependency 与 `dsh.profile.bundles` 含包名；
+- `--dump-config` 出现 Bundle row；
+- 新 provider 能 list/get 全部预期 Skill；
+- remove 后 dependency、layer、package 目录消失；
+- 用户 Skill 哨兵未被修改。
+
+## 9. 项目自有 `manifest.json`
+
+仓库仍可能保留用于历史工具或内容清单的 `manifest.json`，但它不是 DSH Bundle manifest。DSH CLI 不读取其中的：
+
+- `schemaVersion: plugin-manifest/v1`；
+- `minFrameworkVersion`；
+- `skills` 清单；
+- `hooks.afterCompanyCreate` 等 hook。
+
+若内部工具继续消费该文件，必须把它称为“项目元数据”，不得写成 Harness 或 marketplace 的安装协议；任何 hook 也只能由明确实现的调用方执行。

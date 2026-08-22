@@ -1,0 +1,17 @@
+# ai-company-framework bundle patch: two host rows.
+#   1. ai-company-framework — Skills + employee sidebar host + Feishu bridge host
+#      (combined entry in ./index.js).
+#   2. @nanmicoder/dsh-agent-teams — a declared dependency mounted as its own row so
+#      its tools/usage section and web activity panel are discovered. `dsh plugin add`
+#      only promotes the directly-added package to a profile bundle layer, so a plain
+#      transitive dependency would NOT become a row on its own.
+- insert:
+    - id: ai-company-framework
+      name: 'ai-company-framework'
+    - id: agent-teams
+      name: '@nanmicoder/dsh-agent-teams'
+      config:
+        # Team state lives under `<session workspace>/.agent-teams/<teamId>/`
+        # (team.json + inbox/*.jsonl). Mirrors the package's own defaults.
+        stateDir: .agent-teams
+        memberProvider: spawn

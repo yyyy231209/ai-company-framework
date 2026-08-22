@@ -1,107 +1,152 @@
 # 快速开始（详细版）
 
-本指南面向完全没接触过 Agent 编排的小白。跟着做，10 分钟内开起第一家 AI 公司。
+本指南使用 DeepSeek Harness 原生 profile Bundle 路径安装 AI Company Framework。当前已验证 DSH `0.1.0-rc.8`，Windows 10/11。
 
-## 0. 你需要什么
+## 0. 前置条件
 
-| 项目 | 要求 |
-|------|------|
-| 系统 | Windows 10/11（64 位） |
-| DeepSeek Harness | 桌面版已安装并登录（本框架运行于其上） |
-| 网络 | 可访问模型 API（框架本身不需要额外网络） |
+**自动获得（安装即生效，无需额外步骤）**：
 
-不需要会写代码、不需要配置服务器、不需要 API Key（Harness 登录后自带模型）。
+- 14 个公司/岗位 Skills 与 7 个模板；
+- AgentTeams 运行时与 Web 活动面板（依赖 `@nanmicoder/dsh-agent-teams@0.1.10`）；
+- 员工侧边栏（host + Web UI）；
+- 飞书机器人栏（host + Web UI）与官方接入向导。
 
-## 1. 安装框架
+**需要你人工准备（本 Bundle 不做也不该自动化）**：
 
-打开 PowerShell，进入仓库目录：
+- 已安装并登录 DeepSeek Harness / DSH Desktop，目标 profile 可正常启动；
+- Node.js 与 pnpm 可供 `dsh plugin` 使用；
+- 会话运行前在宿主「设置 → 模型」配置你自己的模型 provider API Key；
+- 首次使用飞书时完成官方授权（扫码确认、必要时的管理员审批与机器人入群）；
+- 本地源码安装时需要 npm 生成 tgz。
 
-```powershell
-cd <你的仓库目录>   # 例如：cd D:\projects\ai-company-framework
-.\scripts\install.ps1
-```
+## 1. 安装 Bundle
 
-安装脚本做的事：
+### 1.1 从源码生成本地包
 
-1. 检查 Harness 技能目录是否存在；
-2. 把 `core/skills/` 下的框架技能复制到 Harness；
-3. 输出已安装技能清单。
-
-然后自检：
+在仓库根目录执行：
 
 ```powershell
-.\scripts\verify.ps1
+npm pack
 ```
 
-预期输出：`OK: 框架技能已就绪 (16 skills)` 之类的绿色结果。
+会生成类似 `ai-company-framework-0.3.0.tgz` 的文件。
 
-## 2. 新建会话
+### 1.2 安装到 web profile
 
-关键规则：**一个会话只能开一家公司**。
+```powershell
+dsh plugin --profile web add .\ai-company-framework-0.3.0.tgz
+```
 
-- 在 Harness 中点击「新建会话」（或新开标签页）；
-- 不要复用你用来安装框架的会话；
-- 每开一家新公司，就新建一个会话。
+语法中的 `--profile web` 必须写在 `plugin` 之后。若系统 PATH 没有 `dsh`，请用当前 DSH 安装所带的 `@deepseek-ai/dsh/lib/bin.js`：
 
-## 3. 说一句话开公司
+```powershell
+node <path-to-@deepseek-ai/dsh/lib/bin.js> plugin --profile web add .\ai-company-framework-0.3.0.tgz
+```
 
-在新会话里输入（可以换成你自己的业务）：
+注意：**从打包 `.tgz`/registry 安装**，不要 `add <源码目录>`——目录安装记录为 `link:` 依赖，其自身依赖（AgentTeams、飞书 SDK）不会被安装。
 
-> 「我要开一家卖精品咖啡豆的电商公司，首单产出一篇小红书种草笔记和客服话术包，价格带 60–200 元，主要在小红书卖。」
+不要把旧的 `scripts/install.ps1` 当作 Bundle 安装器。它只是源码 checkout 的 legacy 复制脚本，会写用户 Skill 目录，且不属于 npm 包的原生安装/卸载生命周期。
 
-老板 Agent 会：
+## 2. 验证安装
 
-1. 可能问你 1–2 个关键问题（比如渠道/价位，你上面已给就不问）；
-2. 自动盘点可用模型，给每个岗位分配模型路由；
-3. 创建团队（`company-<行业>-<会话ID>`）；
-4. 逐岗位添加员工并发送入职通知；
-5. 员工自写技能 → 老板验收；
-6. 创建任务图并派第一单。
+先检查组合树：
 
-你什么都不用做，等待即可。中途可以随时打断、改需求。
+```powershell
+dsh --profile web --dump-config
+```
 
-## 4. 看产出
+输出应包含 **两个 row**：
 
-公司目录会自动创建：
+- `ai-company-framework`（Skills + 员工侧栏 host + 飞书桥 host）；
+- `agent-teams`（`name: '@nanmicoder/dsh-agent-teams'`，AgentTeams 运行时）。
+
+然后重启 web profile 并新建会话；Skill catalog 应能发现：
+
+- 3 个公司框架 Skill：`company-boss`、`company-pipeline`、`company-role-template`；
+- 11 个岗位 Skill：`role-*`；
+- 合计 14 个 Skill。
+
+7 个模板与飞书 SOP 是 Skill 的按需资源，不会作为独立 catalog 条目出现。
+
+## 3. 新建会话
+
+关键规则：**一个顶层会话只绑定一家公司**。
+
+- 在 Harness 中新建会话（需要先选择工作区并配置模型 provider）；
+- 每开一家新公司都使用新会话；
+- 不要复用已绑定其它公司的会话。
+
+新建会话后，Web 界面会出现：AgentTeams 团队活动面板、员工侧边栏入口、飞书机器人栏入口。未创建团队/未授权飞书时，它们显示空状态与引导，不会谎报就绪。
+
+## 4. 加载框架并描述目标
+
+在新会话中明确调用 `company-boss`，或提出建司/多 Agent 工作流需求。例如：
+
+> 「请使用 company-boss：我要开一家卖精品咖啡豆的电商公司，首单产出一篇小红书种草笔记和客服话术包，价格带 60–200 元，主要在小红书卖。」
+
+Skill 会指导 Agent：
+
+1. 澄清影响架构的必要信息；
+2. 调用宿主模型列表并拟定岗位路由；
+3. 使用 AgentTeams 创建团队、成员和任务；
+4. 在当前工作区的公司目录写岗位骨架与产出；
+5. 组织质检、返工和交付。
+
+AgentTeams 运行时由本 Bundle 的依赖提供；成员会话、活动面板与员工侧边栏的 UI 由本 Bundle 的 client bundle 在宿主 web 界面中挂载。
+
+## 5. 公司目录
+
+工作流约定的公司目录：
 
 ```text
 <工作区>/companies/<会话ID>/
-├─ .dsh/company.json        # 公司绑定信息
-├─ .dsh/skills/             # 员工技能文件
-├─ 交付/                    # 交付物
-├─ 质检/                    # 质检报告
-└─ 验证/                    # 验证记录
+├─ .dsh/company.json
+├─ .dsh/skills/
+├─ 交付/
+├─ 质检/
+└─ 验证/
 ```
 
-- 首单交付物在 `交付/` 下；
-- 质检报告在 `质检/` 下（结论置顶 + 表格）。
+实际文件写入仍受当前 DSH 沙盒和用户授权控制；Skill 规则不能绕过宿主权限。
 
-## 5. 反馈与修订
+## 6. 飞书能力（首次使用需人工官方授权）
 
-交付后你随时说一句反馈，例如：
+本 Bundle **自带**飞书桥 host 与「飞书机器人」栏 UI（收编自获授权的本地 bridge，见 `NOTICE.md`）。安装即具备：
 
-> 「把文案语气改得更生活化，保留原有卖点和字数限制。」
+- `feishu_onboard / feishu_status / feishu_send / feishu_notify` 工具；
+- 官方 `registerApp` 扫码一键创建向导（App Secret 仅经 Windows DPAPI、CurrentUser 作用域本地加密）；
+- N 条机器人 WebSocket 长连接与精准路由（需先完成授权与绑定）。
 
-老板会走「根源分析 → 定向打回 → 返工 → 复检 → 再交付」闭环，直到你满意。
+**人工闸门**（Bundle 不替你做）：
 
-## 6.（可选）接入飞书
+- 首次使用需你在官方页面扫码/确认授权；
+- 管理员审批、机器人入群、群镜像等按飞书平台规则执行；
+- 未授权状态只显示官方 onboarding 引导与空状态，**不会显示 connected**。
 
-老板问「是否需要接入飞书」时回答「需要」：
+## 7. 卸载
 
-1. 打开老板给的一次性官方确认链接，确认一次；
-2. 等待显示 connected；
-3. 在飞书里给机器人发「测试」，验证收发；
-4. 客服机器人同理（需要客服机器人时）。
+```powershell
+dsh plugin --profile web remove ai-company-framework
+```
 
-注意：群聊需要你在飞书客户端手动把机器人拉进群；本框架不自动入群。
+然后重启 web profile。原生卸载会移除 profile dependency、Bundle layer 与包目录（含孤儿传递依赖）；包内 provider 和资源随 package 目录消失，不会删除或改写用户自己的 `$DSH_HOME/skills`。你的公司数据与飞书凭据按设计保留（配置回滚 ≠ 数据清除）。
 
-## 常见卡点速查
+## 8. 开发者自检
 
-| 现象 | 处理 |
-|------|------|
-| 安装报「脚本被禁用」 | `powershell -ExecutionPolicy Bypass -File scripts\install.ps1` |
-| 建司后员工没回话 | 等 1–2 分钟；再不行看「故障排查」文档 |
-| 忘记在哪个会话开的公司 | 看 `companies/` 目录下的 `company.json` 的 `sessionId` |
-| 想开第二家公司 | 新建会话，不要在当前会话继续 |
+```powershell
+node tests/bundle-check.mjs
+node tests/client-feishu-check.mjs
+powershell -File tests/smoke.ps1
+powershell -File scripts/security-scan.ps1
+npm pack --dry-run
+```
 
-详见 [FAQ](FAQ.md) 与 [故障排查](TROUBLESHOOTING.md)。
+真实隔离安装/卸载：
+
+```powershell
+powershell -File tests/install-bundle.ps1 -DshBin <path-to-@deepseek-ai/dsh/lib/bin.js>
+```
+
+全栈隔离验收（P3/P4/P6 口径，可复用 QA 脚本）：`scripts/qa-p4-fullstack.ps1`（安装/双 row/14 Skills/工具/启动/卸载/哨兵/卫生扫描）与 `scripts/qa-p4-web.ps1`（web profile 真实启动、`__DSH_BOOT__` 双 client bundle、侧栏路由、飞书未授权边界）。测试使用临时 `DSH_HOME`，不触碰生产环境。
+
+常见问题见 [FAQ](FAQ.md) 与 [故障排查](TROUBLESHOOTING.md)。

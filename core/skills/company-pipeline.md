@@ -1,10 +1,12 @@
 ---
 name: company-pipeline
-description: 多Agent公司自动化流水线框架（Token优化版 v2.0）——脚本化建司+飞书自动接入+子机器人创建+调度+质检+交付+扩招+客户对话体系。建司/调度/变更/交付/客服场景加载。
-whenToUse: 用户一句话要求建司、要求按流水线执行、发生需求变更/追加任务/换赛道/扩招/客户对接时
+description: 多Agent公司自动化流水线框架（Token优化版 v2.0）——脚本化建司+飞书自动接入+子机器人创建+调度+质检+交付+扩招+客户对话体系。建司/调度/变更/交付/客服场景加载。仅在用户输入 /company 开启公司模式后生效。
+whenToUse: 公司模式已开启（company_mode=on）且用户一句话要求建司、要求按流水线执行、发生需求变更/追加任务/换赛道/扩招/客户对接时
 ---
 
 # 自动化流水线框架（v2.0）· 8 阶段执行引擎 + 代码化脚本 + 客户对话体系
+
+> **门控铁律**：本流水线仅在 `company_mode` 工具返回 **on** 时执行。执行任何阶段前先调用 `company_mode` 确认；off/未设置时**禁止**建司/调度/质检/交付，按普通对话回复并提示「公司模式未开启，输入 /company 开启」。
 
 > 配套 company-boss（总控）与 company-role-template（岗位模板）使用。本文档提供「怎么做」的规程，boss 提供「总控协议」，role-template 提供「员工技能骨架」。
 
@@ -54,7 +56,7 @@ P0 需求解析 → P1 模型路由 → P2 一键建司 → P3 飞书接入（�
 
 ### P3 飞书接入（与 P4 并行）
 - 默认走官方一键创建：`feishu_onboard(action=start)` → 用户只打开一次官方确认链接 → SDK 自动创建机器人、最小权限、`im.message.receive_v1`、WebSocket → App Secret 自动 DPAPI 加密 → 自动绑定公司；再用 `feishu_onboard(action=status)` / `feishu_status` 验证。
-- 全流程见 `company-pipeline/feishu-onboarding-sop.md`。禁止默认用 Chrome 逐页建应用；只有绑定历史应用或发布到更大可用范围时才走备用路径。
+- 全流程见 `../feishu-onboarding-sop.md`（相对当前 Skill 资源根）。禁止默认用 Chrome 逐页建应用；只有绑定历史应用或发布到更大可用范围时才走备用路径。
 - 关键坑：老板机器人 `kind=boss`；员工机器人必须 `kind=staff` 且 `staffMemberId=<AgentTeams member.id>`；**默认 `allowGroup=true` 一次全开**（单聊+群聊），`allowGroup` 只申请群 @ 权限，群主仍须用飞书桌面端/移动端把 App 加入群；**禁止重复授权**（已 connected 不重新 start，防新建第二套机器人）；客服岗重建后必须同步更新 registry 的 `staffMemberId`；老板单聊回传用日志真实 sender open_id；注册表支持热加载，只有宿主插件代码变更才需 `Ctrl+Shift+R` 重启 Harness。
 - 桥 `>=0.4.0` 默认一家公司一个老板 App：P2P 用唯一精确 `/成员名 正文` 或 `/岗位名 正文` 虚拟路由；员工回复原样传系统通道的 `botId/receiveId/receiveIdType`。需要不同身份/头像或租户隔离时才创建独立员工 App。
 
@@ -144,7 +146,7 @@ P0 需求解析 → P1 模型路由 → P2 一键建司 → P3 飞书接入（�
 7. **status 事件驱动**，不主动轮询。
 8. **output 即汇报**：任务 output 写完整摘要，汇报不重复。
 
-## 四、模板索引（templates/ 目录，与本文件同目录）
+## 四、模板索引（`../templates/`，相对当前 Skill 资源根）
 
 | 文件 | 用途 |
 |------|------|

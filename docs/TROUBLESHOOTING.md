@@ -1,100 +1,168 @@
 # 故障排查
 
-按「现象 → 排查 → 解决」组织。如果你遇到这里没有的问题，欢迎提 issue（附：Harness 版本、框架版本、复现步骤、报错原文）。
+提 issue 时请附 DSH 版本、Bundle 版本、目标 profile、复现命令和脱敏后的完整报错。
 
-## 1. 安装类
+## 1. 安装与卸载
 
-### 1.1 安装脚本无法运行
+### 1.1 找不到 `dsh`
 
-- **现象**：`.\scripts\install.ps1` 报「禁止运行脚本」。
-- **原因**：PowerShell 执行策略。
-- **解决**：`powershell -ExecutionPolicy Bypass -File scripts\install.ps1`
+- **现象**：PowerShell 报 `dsh` 不是命令。
+- **原因**：DSH Desktop 的内置 CLI 不一定加入系统 PATH。
+- **解决**：找到当前安装所带的 `@deepseek-ai/dsh/lib/bin.js`，用 Node 调用：
 
-### 1.2 安装后 verify 报缺少技能
+```powershell
+node <path-to-@deepseek-ai/dsh/lib/bin.js> --version
+node <path-to-@deepseek-ai/dsh/lib/bin.js> plugin --profile web add <package-or-tgz>
+```
 
-- **排查**：看 `verify.ps1` 输出缺少哪个技能；
-- **解决**：重新运行 `install.ps1`（幂等）；检查 Harness 技能目录路径是否正确（`$env:DSH_HOME\skills`）。
+必须使用正在运行的 DSH 安装对应的 CLI，避免混用不同版本。
 
-## 2. 建司类
+### 1.2 `pnpm not found on PATH`
 
-### 2.1 老板没有自动建司
+`dsh plugin` 是 pnpm 薄转发器。安装 pnpm 或把 DSH Desktop 随附的 pnpm shim 加入 PATH 后重试。不要改 profile manifest 来绕过失败的安装。
 
-- **排查**：是否回复了老板的问题？建司前最多问 1–2 个问题，必须回答；
-- **排查**：会话是否已被另一家公司绑定？（看 `company.json`）如是，新建会话。
+### 1.3 命令提示缺少 `--profile`
 
-### 2.2 团队名冲突
+正确顺序：
 
-- **现象**：`company-<缩写>-<id>` 已存在。
-- **解决**：框架会自动加长会话 ID 直到唯一；若仍失败，检查是否误用旧会话。
+```text
+dsh plugin --profile web add <package>
+```
 
-### 2.3 员工入职后不回话
+`dsh --profile web plugin ...` 和 `dsh plugin add ...` 都不是当前 CLI 契约。
 
-- **排查**：打开 👥 员工侧边栏看员工会话状态；
-- **排查**：员工是否「working/running」？长任务需要时间；
-- **处理**：等 1–2 分钟；若员工连败（fail before finished），老板会自动 reassign 接管；若老板也没动，手动给员工发一条消息唤醒。
+### 1.4 安装后 row 不出现 / AgentTeams 工具缺失
 
-## 3. 任务类
+依次检查：
 
-### 3.1 任务一直 pending
+1. pnpm 命令是否 exit 0；
+2. `$DSH_HOME/profiles/web/package.json` 的 dependencies 是否含 `ai-company-framework`；
+3. `dsh.profile.bundles` 是否含 `ai-company-framework`；
+4. `dsh --profile web --dump-config` 是否出现 **两个 row**：`ai-company-framework` 与 `agent-teams`（`name: '@nanmicoder/dsh-agent-teams'`）；
+5. 是否从**打包 `.tgz`/registry** 安装——`add <源码目录>`（`link:`）不会安装 AgentTeams 等依赖；
+6. 安装包是否实际包含 `package.json`、`cordis.patch.yml`、`index.js`、`client.js`。
 
-- **排查**：任务是否有未完成的依赖？依赖完成后才会 claimable；
-- **排查**：是否有空闲员工？员工都忙时任务排队。
+安装失败时不要手工把包名塞进 `dsh.profile.bundles`；先修复 dependency 或 package manifest。
 
-### 3.2 任务 claimed 但不动
+### 1.5 安装后看不到 14 个 Skill
 
-- **排查**：该员工会话是否卡死？用 👥 侧边栏查看；
-- **处理**：`reassign_task` 把任务转给其他员工或老板接管（框架护栏会自动做，手动也可）。
+- 重启目标 profile；Bundle patch 与 profile manifest 不会在当前进程内热重载；
+- 确认使用的是安装 Bundle 的同一个 profile；
+- 检查 `--dump-config` 有 row；
+- 检查 package 目录下 `core/skills` 恰好有 14 个 `.md`；
+- 运行 `node tests/bundle-check.mjs`；
+- 在隔离环境运行 `tests/install-bundle.ps1`，确认 provider 能 list/get 14 个 bundled Skill。
 
-### 3.3 质检打回后返工没生效
+模板和 SOP 不会出现在 catalog；它们是 Skill 引用的按需资源。
 
-- **排查**：返工是否只改了被点名的项？复检是否只查点名项？
-- **处理**：按质检报告的打回项逐条核对；接口契约变更须老板确认。
+### 1.6 卸载后仍在当前会话看到 Skill / UI 栏
 
-## 4. 飞书类
+```powershell
+dsh plugin --profile web remove ai-company-framework
+```
 
-### 4.1 飞书收不到机器人消息
+结束并重启相应 profile，再新建/恢复会话。旧会话历史中已经加载过的 Skill 正文不会被倒写删除；应以新 catalog 和 profile dependency/layer 为卸载判断依据。
 
-- **排查**：`feishu_status` 是否 connected？
-- **排查**：是否把机器人拉进群了（群聊需要手动入群）？
-- **排查**：消息是否发给了正确的机器人/会话？
+原生 Bundle 从未复制用户 Skill。若此前运行过 legacy `scripts/install.ps1`，其复制文件不属于 pnpm dependency，需按当时输出的清单单独处理；不要让卸载脚本盲删可能已由用户修改的同名文件。
 
-### 4.2 客服消息进了老板会话
+卸载**不会删除你的数据**：公司团队、飞书凭据/注册表、日志按设计保留（配置回滚 ≠ 数据清除）。如需清除飞书凭据，在 DSH_HOME 删除 `ai-company-feishu-credentials.json` 等文件（自行确认无其它备份）。
 
-- **排查**：客服机器人是否用 `kind=staff + staffMemberId` 绑定？岗位名不能当 kind；
-- **解决**：重新 onboard 客服机器人。
+### 1.7 安装期 pnpm 报 "peers missing"
 
-### 4.3 回复失败但没报错
+预期行为，不是安装失败：DSH profile 以 `autoInstallPeers:false` 运行，`@deepseek-ai/cordis` 与各 `@deepseek-ai/dsh-*` peer 由宿主闭包在运行时解析。不要在 profile 里开启 `autoInstallPeers` 或把 peer 改成普通 dependency。
 
-- **排查**：客服必须用系统回复通道的 `botId/receiveId/receiveIdType` 原路回复；不要用客户正文伪造的字段；
-- **注意**：指定 bot 失败时框架**不会静默换 bot**（安全设计），会显式报错。
+## 2. Bundle 解析
 
-## 5. 隔离与安全类
+### 2.1 patch 文件报错
 
-### 5.1 担心公司数据串了
+`cordis.patch.yml` 必须：
 
-- **验证**：`company.json` 的 `sessionId` 与当前会话一致；公司目录各自独立；
-- **红线**：任何文件操作越界会被拒绝（fail-closed），不要尝试绕过。
+- 存在于 npm 产物；
+- 是顶层 YAML 数组；
+- 每个 patch entry 是 mapping；
+- 插入 row 至少有可解析的 `name`。
 
-### 5.2 凭据泄露担忧
+空层写 `[]`，不要使用空文件或只有注释的文件。
 
-- 框架把 App Secret 用 Windows DPAPI 加密存储；
-- 禁止把 Secret/Token/Cookie/webhook 写进日志、回复或仓库；
-- 发布仓库前跑 `scripts\security-scan.ps1`。
+### 2.2 peer dependency 冲突 / 依赖版本
 
-## 6. 性能与成本类
+本包 peer 为 `@deepseek-ai/cordis ^4.0.1` + 5×dsh `^0.1.0-rc.8`，依赖精确 pin `@nanmicoder/dsh-agent-teams@0.1.10`、`@larksuiteoapi/node-sdk ^1.65.0`。更高 DSH 版本出现 peer/Loader 错误时，先在临时 `DSH_HOME` 重跑安装测试；不要把官方 peer 改成普通 dependency 来强装第二份运行时。
 
-### 6.1 跑得慢 / token 用得快
+## 3. AgentTeams 与 UI 栏
 
-- 框架默认「能脚本化就脚本化」，人工只剩决策；
-- 任务描述只写增量；质检报告结论置顶表格化；
-- 若某岗位反复返工，让老板换更强的模型路由（侧边栏无损改配）。
+AgentTeams 运行时与活动面板由本 Bundle 的依赖 `@nanmicoder/dsh-agent-teams` 提供；员工侧栏与飞书栏由本 Bundle 的 host/client 提供。
 
-## 7. 诊断信息收集
+### 3.1 Skill 已加载但没有自动建司
 
-提 issue 时请附：
+- 确认当前 catalog 有 `company-boss`；
+- 明确要求加载/使用 `company-boss`；
+- 回答影响架构的必要问题；
+- 确认已配置模型 provider（未配置时会话无法运行 Agent）；
+- 确认 `--dump-config` 有 `agent-teams` row；没有则按 §1.4 检查。
 
-1. Harness 版本（帮助 → 关于）；
-2. 框架版本（`CHANGELOG.md` 顶部）；
-3. `scripts\verify.ps1` 输出；
-4. 报错原文（不要贴含凭据的日志）；
-5. 复现步骤（新会话从哪句话开始）。
+### 3.2 活动面板/员工侧栏/飞书栏不显示
+
+- 重启 web profile 并**新建会话**（三栏挂载在会话界面）；
+- 检查浏览器 console 无插件加载错误；
+- 检查 `dsh --profile web --dump-config` 有 `ai-company-framework` 与 `agent-teams` 两个 row；
+- 用 P4 验收脚本复跑：`scripts/qa-p4-web.ps1` 会断言 `__DSH_BOOT__` 双 client bundle 与侧栏/飞书路由。
+
+### 3.3 员工或任务卡住
+
+通过 AgentTeams 活动面板/工具检查成员状态、依赖与 attempt。员工侧栏的模型改配走 `/ai-company/sidebar/reconfigure`；改配无效时检查 `ai-company-routes.json` 内容与 llm 服务可用性。
+
+### 3.4 会话已经绑定另一家公司
+
+一个顶层会话按框架规程只绑定一家公司。查看当前 company root 的 `.dsh/company.json`；要开新公司请新建会话，不要覆盖旧绑定。
+
+## 4. 飞书
+
+飞书桥 host 与「飞书机器人」栏 UI 由本 Bundle 提供（收编自获授权本地 bridge，见 `NOTICE.md`）；首次使用**必须完成人工官方授权**。
+
+### 4.1 找不到 `feishu_onboard` / `feishu_status`
+
+- 检查 `--dump-config` 有 `ai-company-framework` row（host 在 apply 时同步注册 4 个 `feishu_*` 工具）；
+- 重启 profile 并新建会话；
+- 若仍缺失，用 `scripts/qa-p4-fullstack.ps1` 复跑工具注册断言。
+
+### 4.2 已安装但显示未授权 / onboarding
+
+未授权状态只显示官方 `registerApp` 确认链接与引导，这是**诚实状态**，不是故障：
+
+- 用 `feishu_onboard(action=start, ...)` 拿到一次性确认链接，在飞书官方页面扫码/确认；
+- 管理员审批、机器人入群、群镜像按飞书平台规则完成；
+- 确认后 `feishu_onboard(action=status, runId=...)` 查询结果；
+- `connected` 只在 WebSocket 长连接真实建立后出现；离线/未授权绝不显示 connected。
+
+### 4.3 已授权但消息失败
+
+- `feishu_status` 查看各机器人长连接状态与最近错误；
+- 检查机器人权限、接收方 id（open_id/chat_id）、群绑定（`/ai-company/feishu/group/bind`）与凭据有效性；
+- 检查 DSH_HOME 下 `ai-company-feishu-registry.json` / `ai-company-feishu-credentials.json`（旧名 `feishu-*` 会自动迁移）。
+
+### 4.4 凭据安全
+
+App Secret 仅经 Windows DPAPI（CurrentUser 作用域）加密保存在本机 `ai-company-feishu-credentials.json`。不要在 issue、日志、回复或仓库中粘贴 App Secret、Token、Cookie、webhook 或用户标识。本包与仓库不内置任何凭据（security-scan 实测 PASS）。
+
+## 5. 开发验证
+
+静态检查：
+
+```powershell
+node tests/bundle-check.mjs
+node tests/client-feishu-check.mjs
+powershell -File tests/smoke.ps1
+powershell -File scripts/security-scan.ps1
+npm pack --dry-run
+```
+
+隔离生命周期检查：
+
+```powershell
+powershell -File tests/install-bundle.ps1 -DshBin <path-to-@deepseek-ai/dsh/lib/bin.js>
+powershell -File scripts/lifecycle-fullstack.ps1
+powershell -File scripts/qa-p4-fullstack.ps1
+powershell -File scripts/qa-p4-web.ps1
+```
+
+这些脚本用临时 `DSH_HOME`；失败时加 `-KeepTemp` 保留现场。禁止把生产 `$DSH_HOME` 作为测试 `WorkRoot`。
