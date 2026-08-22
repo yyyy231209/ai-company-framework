@@ -1,98 +1,127 @@
 # AI Company Framework
 
-> **Company Is a Word.**
->
-> **One sentence → a working multi-agent company.** Install this DeepSeek Harness `dsh.bundle`, say what you want to build, and a company of role-specialized agents (writer, editor, developer, QA, sales, customer service…) designs, schedules, quality-checks and delivers — while you stay in charge of every major decision.
+> **Company Is a Word.** — Say one sentence, get a working multi-agent company.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Release](https://img.shields.io/badge/Release-v0.3.10-blue)](RELEASE_NOTES.md)
+[![Wiki](https://img.shields.io/badge/Wiki-ai--company--framework-8A2BE2)](https://github.com/yyyy231209/ai-company-framework/wiki)
 
 [English](README.md) | [简体中文](README.zh-CN.md)
 
-## Why AI Company Framework stands out
+---
 
-- **One-sentence onboarding.** Say "start an ecommerce content company" and the boss agent clarifies, designs roles, routes models by capability, builds the team and dispatches the first order — no manual setup.
-- **Zero impact on daily chat.** Company mode is off by default; type `/company` to enable, `/no-company` to disable. Your normal conversations are untouched until you opt in.
-- **Per-customer memory that follows the customer.** A SQLite customer database (id-isolated per customer), plus company/general memory. Same customer across private chat and multiple groups is **automatically merged into one profile** — and shared across every client-facing role (sales, business, customer service), so no one asks the customer to repeat themselves.
-- **Agents push to you — you don't poll.** Autonomous push: after "let me check", the agent reads its own output and proactively sends the result. No polling, no "did you get it?".
-- **Humans own big decisions.** Pricing exceptions, refunds, commitments, legal/PR — a **human decision gate** pushes the decision to your phone via Feishu; nothing lands until you say so.
-- **Conversation isolation, hardened.** Employee sidebar state is session-scoped (fail-closed) and model reconfiguration is ownership-checked (403) — no cross-company data leaks.
-- **Feishu-native.** Create a bot for the boss *and any employee* with one scan (registerApp), private/group routing, two-way logs, external-contact onboarding guide, full-coverage scopes + `extraScopes`.
-- **Open-source safe.** The package ships zero user data — databases, logs and credentials (DPAPI-encrypted) are created locally at first use.
+## ✨ What it is — in 30 seconds
 
-## What's in the box (v0.3.10)
+A DeepSeek Harness `dsh.bundle` that turns **one sentence** into a **company of role-specialized agents** (writer, editor, developer, QA, sales, customer service…) that designs, schedules, quality-checks and delivers — while **you stay in charge of every major decision**.
 
-- **15 flat Skills**: `company-boss`, `company-pipeline`, `company-role-template`, `company-customer-memory` (generic three-layer memory for any client-facing role) + 11 role Skills — all gated by the `/company` switch.
-- **7 workflow templates** under `core/templates/`.
-- **AgentTeams runtime + web activity panel** (bundled dependency, mounted as its own Cordis row): team creation, member sessions, dependency tasks, activity tree, archived teams.
-- **Employee sidebar (host + web UI)**: per-member model routing (lossless reconfigure), live session/tool view, messaging, session isolation, activity-panel restore entry.
-- **Feishu bot bridge (host + web UI)**: official `registerApp` one-scan onboarding, DPAPI-protected credentials, boss + per-employee bots, private/group routing, two-way logging, boss auto-reply, autonomous push, human decision gate, external-contact guide, full-coverage scopes.
-- **Customer memory**: `core/scripts/customer-memory.mjs` (Node built-in SQLite, zero deps) — per-customer profiles + message log, three-layer memory, cross-group/private merge, one-shot full customer pull.
-- **Company mode switch**: `/company` / `/no-company` host commands + `company_mode` tool gating all Skills.
-- **Memory mode per role**: `三层` (three-layer, client-facing) or `单层` (single, internal) — declared in the role skeleton.
-- No RAG, no vector database, no telemetry.
+```text
+你说一句话 → 老板澄清(一次一问) → 实时盘点模型/分岗位路由 → 建团队(AgentTeams)
+  → 员工入职自写技能 → 派首单 → 质检闭环 → 交付包(含假设清单) → 你要不要改？一句话定向返工
+```
 
-## What stays human (no automation, by design)
+![Architecture](assets/architecture.svg)
 
-- **Model provider**: configure your own API key in host settings.
-- **Feishu authorization**: scan/confirm happens on Feishu official pages (DPAPI-local secrets; `connected` only when a real WebSocket is up).
-- **Major decisions**: pricing, refunds, commitments — pushed to you for approval.
-- **Workspace selection**: DSH Desktop directory picker.
-- **Publishing**: this repo does not publish, release, push or PR without explicit human confirmation.
-
-## Runtime boundaries
-
-- DeepSeek Harness supplies models, tools, sessions, Skills and the Bundle runtime.
-- AgentTeams execution, activity panel, employee sidebar and the Feishu bar are **implemented by this Bundle** and activate on install.
-- Feishu authorization is a human gate; staging capabilities are not claimed stable.
-- Honest-state rule: anything not installed/authorized/online is shown as such with onboarding guidance.
-
-## Install
+## ⚡ 30-second quick start
 
 ```powershell
-# Packaged tarball (recommended) or registry spec — not a source directory
+# 1. Install (packed tarball — not a source directory)
 dsh plugin --profile web add .\ai-company-framework-0.3.10.tgz
 ```
 
-Start a new Harness session after install (the web UI mounts the activity panel / employee sidebar / Feishu bar), then either:
-
 ```text
-/company   → enable company mode, then describe your business
-/no-company → back to normal chat
+# 2. Restart DSH Desktop, open a NEW session, then:
+/company
+# 3. Say what you want:
+#    "I want an ecommerce content company — first order: a Xiaohongshu post + customer-service scripts."
 ```
 
-## Uninstall
+That's it. The boss agent takes it from there.
 
-```powershell
-dsh plugin --profile web remove ai-company-framework
+| AgentTeams activity | Employee sidebar | Company created |
+|---|---|---|
+| ![AgentTeams](assets/screenshots/agentteams-activity.png) | ![Sidebar](assets/screenshots/employee-sidebar.png) | ![Company](assets/screenshots/company-created.png) |
+
+## 🎯 Why it stands out
+
+| Advantage | What you get |
+|---|---|
+| **Zero impact on daily chat** | Company mode is **off by default** — `/company` to enable, `/no-company` to disable. Your normal conversations are untouched until you opt in. |
+| **Customer memory that follows the customer** | SQLite per-customer profiles (id-isolated) + company/general memory. The same customer across private chat and **multiple groups is automatically merged into one profile**, shared by every client-facing role — **nobody asks the customer to repeat themselves**. |
+| **Agents push to you — you don't poll** | After "let me check", the agent reads its own output and **proactively sends** the result. No polling, no "did you get it?". |
+| **Humans own big decisions** | Pricing exceptions, refunds, commitments, legal/PR → a **human decision gate** pushes the choice to your phone via Feishu; **nothing lands until you approve**. |
+| **One bot per employee** | Create a Feishu bot for the boss *and any employee* with one scan (registerApp) — perfect for remote work and client-facing teams. |
+| **Hardened conversation isolation** | Sidebar state is session-scoped (fail-closed), model reconfiguration is ownership-checked (403), customer archives are id-isolated. No cross-company leaks. |
+| **Open-source safe** | The package ships **zero user data** — databases, logs and credentials (DPAPI-encrypted) are created locally at first use. |
+| **Memory mode per role** | `三层` (three-layer, client-facing) or `单层` (single, internal) — declared in each role skeleton. |
+
+## 🏭 Use cases
+
+- **Ecommerce content studio** — research → copywriting → QA → rework → delivery, batched into one deliverable.
+- **Game studio** — designer plans, writer writes store copy, QA gates, customer service handles clients with full customer memory.
+- **Customer support & sales** — per-customer archives + cross-group merge + autonomous push + human decision gate.
+- **Remote team** — every employee can have their own Feishu bot; you steer from your phone.
+- **Agency / outsourcing** — one-sentence onboarding per client, isolated companies per session.
+
+## 📦 What's in the box (v0.3.10)
+
+**15 flat Skills** (all gated by `/company`):
+
+| Skill | Role |
+|---|---|
+| `company-boss` | Boss — architecture, scheduling, QA loop, delivery, wisdom |
+| `company-pipeline` | 8-stage automation pipeline (build/feishu/schedule/QC/deliver/hire) |
+| `company-role-template` | Role-skeleton template (self-written skills by employees) |
+| `company-customer-memory` | Generic three-layer memory for any client-facing role |
+| `role-writer / role-editor / role-coder / role-researcher / role-qa / role-ops / role-finance / role-hr / role-data / role-translator / role-customer-service` | Prebuilt role skills |
+
+Plus:
+- **7 workflow templates** (`core/templates/`).
+- **AgentTeams runtime + web activity panel** (bundled dependency, own Cordis row).
+- **Employee sidebar (host + web UI)**: lossless per-member model routing, live session/tool view, messaging, session isolation, activity-panel restore.
+- **Feishu bot bridge (host + web UI)**: official registerApp one-scan onboarding, DPAPI credentials, boss + per-employee bots, private/group routing, two-way logs, boss auto-reply, autonomous push, human decision gate, external-contact guide, full-coverage scopes + `extraScopes`.
+- **Customer memory**: `core/scripts/customer-memory.mjs` (Node built-in SQLite, zero deps) — per-customer profiles + message log, three-layer memory, cross-group/private merge, one-shot full customer pull.
+- **Company mode switch**: `/company` / `/no-company` commands + `company_mode` tool.
+- **No RAG, no vector database, no telemetry.**
+
+## 🏗️ Architecture & boundaries
+
+```
+DeepSeek Harness (models, tools, sessions, Skills, sandbox, web)
+  └─ AI Company Framework bundle
+       ├─ 15 Skills provider (package-local, no user-dir copies)
+       ├─ AgentTeams runtime + activity panel (bundled dep)
+       ├─ Employee sidebar host + UI (session-isolated)
+       ├─ Feishu bridge host + UI (multi-bot, DPAPI)
+       └─ Customer memory (SQLite, per-customer)
+  └─ Human gates: model API key · Feishu authorization · major decisions · workspace
 ```
 
-Native removal clears the profile dependency, Bundle layer and package directory. Your own data — company teams, customer memory, Feishu credentials/registry, logs — is deliberately kept (config rollback ≠ data deletion).
+- Models/tools/sessions/Skills/Bundle runtime come from DeepSeek Harness; the rest is **implemented by this Bundle** and activates on install.
+- Honest-state rule: anything not installed/authorized/online is shown as such with onboarding guidance — never falsely reported ready.
 
-## Verification
+## 🛡️ Security
 
-Verified on DSH Desktop embedded `@deepseek-ai/dsh 0.1.0-rc.8` (Windows):
+- Zero user data in the package (verified: no `.db`/`.jsonl` in the tarball).
+- Feishu App Secrets: **Windows DPAPI**, CurrentUser scope, local only; `connected` only when a real WebSocket is up.
+- Customer archives: per-id isolation; sidebar: per-session fail-closed + 403 ownership checks.
+- No postinstall hooks; install/uninstall managed by `dsh plugin`.
 
-```powershell
-node tests\bundle-check.mjs
-powershell -File tests\smoke.ps1
-powershell -File scripts\security-scan.ps1
-powershell -File tests\install-bundle.ps1 -DshBin <path-to-@deepseek-ai\dsh\lib\bin.js>
-```
+## ✅ Verification
 
-Isolated acceptance (fresh temp `DSH_HOME` + new profile + real `.tgz`): dual Cordis rows, 15 gated Skills discovered through the installed provider, `feishu_*` tools registered, web boot with both client bundles, sidebar isolation (fail-closed + 403), Feishu un-authorized honest state, uninstall with zero residue, zero data files in the package.
+Verified on DSH Desktop `@deepseek-ai/dsh 0.1.0-rc.8` (Windows): dual Cordis rows, 15 gated Skills, AgentTeams full lifecycle, sidebar isolation, Feishu end-to-end (boss/staff/group/auto-reply/push/decision gate), customer-memory merge & isolation, release tarball integrity. See [RELEASE_NOTES](RELEASE_NOTES.md) and [Wiki](https://github.com/yyyy231209/ai-company-framework/wiki).
 
-> Install-time pnpm "peers missing" warnings are expected (profile runs `autoInstallPeers:false`).
+## 📚 Documentation
 
-## Documentation
+- [Wiki](https://github.com/yyyy231209/ai-company-framework/wiki) · [Quick start](docs/QUICKSTART.md) · [Architecture](docs/ARCHITECTURE.md) · [Bundle & extension guide](docs/PLUGINS.md)
+- [FAQ](docs/FAQ.md) · [Troubleshooting](docs/TROUBLESHOOTING.md) · [Feishu onboarding SOP](core/feishu-onboarding-sop.md)
 
-- [Quick start](docs/QUICKSTART.md) · [Architecture](docs/ARCHITECTURE.md) · [Bundle & extension guide](docs/PLUGINS.md)
-- [FAQ](docs/FAQ.md) · [Troubleshooting](docs/TROUBLESHOOTING.md)
-- [Feishu onboarding SOP](core/feishu-onboarding-sop.md) · [Release notes](RELEASE_NOTES.md)
+## 🤝 Contributing
+
+PRs welcome — see [CONTRIBUTING](CONTRIBUTING.md) and [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md).
 
 ## Notices
 
-Incorporated components (employee sidebar, Feishu bridge) and the supply-chain boundary are documented in [NOTICE.md](NOTICE.md). The package never depends on the unrelated unscoped `dsh-feishu-bridge` npm package.
+Incorporated components (employee sidebar, Feishu bridge) and the supply-chain boundary are documented in [NOTICE.md](NOTICE.md).
 
 ## License
 
